@@ -272,7 +272,7 @@ security definer
 set search_path = public
 as $$
 declare
-  v_token text := encode(gen_random_bytes(24), 'hex');
+  v_token text := encode(extensions.gen_random_bytes(24), 'hex');
   v_expires_at timestamptz := now() + interval '30 days';
 begin
   if not exists (
@@ -287,7 +287,7 @@ begin
   insert into public.list_invites (list_id, token_hash, created_by, expires_at)
   values (
     p_list_id,
-    encode(digest(v_token, 'sha256'), 'hex'),
+    encode(extensions.digest(v_token, 'sha256'), 'hex'),
     auth.uid(),
     v_expires_at
   );
@@ -304,7 +304,7 @@ security definer
 set search_path = public
 as $$
 declare
-  v_token_hash text := encode(digest(p_token, 'sha256'), 'hex');
+  v_token_hash text := encode(extensions.digest(p_token, 'sha256'), 'hex');
   v_invite public.list_invites%rowtype;
 begin
   select *
@@ -346,6 +346,7 @@ grant select, insert, update, delete on table public.shopping_items to authentic
 grant select, insert, update, delete on table public.list_invites to authenticated;
 
 select pg_notify('pgrst', 'reload schema');
+
 
 
 
