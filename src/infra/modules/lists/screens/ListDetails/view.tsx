@@ -1,13 +1,26 @@
+import { useAppColors } from '@infra/shared/theme/use-app-colors';
 import { UIButton } from '@infra/shared/ui/button';
 import { UICard } from '@infra/shared/ui/card';
+import { UIHeader } from '@infra/shared/ui/header';
+import { UIIconButton } from '@infra/shared/ui/icon-button';
+import { lucideIconNodes } from '@infra/shared/ui/icon-nodes';
 import { UIInput } from '@infra/shared/ui/input';
+import { UILucideIcon } from '@infra/shared/ui/lucide-icon';
+import { UIMenu } from '@infra/shared/ui/menu';
 import { UIMessage } from '@infra/shared/ui/message';
+import { UIModal } from '@infra/shared/ui/modal';
 import { UIScreen } from '@infra/shared/ui/screen';
+import { useRouter } from 'expo-router';
+import { useMemo, useState } from 'react';
 import { Controller } from 'react-hook-form';
-import { FlatList, Text, View } from 'react-native';
+import { Alert, FlatList, Pressable, Text, View } from 'react-native';
 import { useListDetailsViewModel } from './view-model';
 
 export const ListDetailsView = () => {
+  const router = useRouter();
+  const colors = useAppColors();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const { form, state, actions, isEditing } = useListDetailsViewModel();
 
   const {
@@ -16,27 +29,134 @@ export const ListDetailsView = () => {
     formState: { errors },
   } = form;
 
+  const menuItems = useMemo(
+    () => [
+      {
+        label: 'Gerar link de convite',
+        iconNode: lucideIconNodes.link,
+        onPress: actions.generateInvite,
+      },
+      {
+        label: 'Perfil',
+        iconNode: lucideIconNodes.user,
+        onPress: () => router.push('/profile' as never),
+      },
+    ],
+    [actions.generateInvite, router]
+  );
+
+  const onDeleteItem = (itemId: string, itemTitle: string) => {
+    Alert.alert('Excluir item', `Deseja remover "${itemTitle}" da lista?`, [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Excluir',
+        style: 'destructive',
+        onPress: async () => {
+          await actions.deleteItem(itemId);
+        },
+      },
+    ]);
+  };
+
   return (
     <UIScreen>
-      <UICard title={state.list?.name ?? 'Lista'} className="mb-4">
-        <UIButton
-          label="Gerar link de convite"
-          variant="info"
-          onPress={actions.generateInvite}
-          containerClassName="mt-3"
-        />
+      <UIHeader
+        title={state.list?.name ?? 'Lista'}
+        onBack={() => router.back()}
+        backIconNode={lucideIconNodes.chevronLeft}
+        rightSlot={(
+          <View className="flex-row items-center gap-2">
+            <UIIconButton
+              iconNode={lucideIconNodes.plus}
+              onPress={actions.openCreateItemModal}
+              accessibilityLabel="Adicionar item"
+            />
 
-        <UIMessage
-          tone="info"
-          message={state.generatedInvite ? `Último convite: ${state.generatedInvite}` : null}
-          className="mt-2 text-xs text-zinc-500 dark:text-zinc-300"
-        />
-      </UICard>
+            <UIIconButton
+              iconNode={lucideIconNodes.ellipsisVertical}
+              onPress={() => setIsMenuOpen(true)}
+              accessibilityLabel="Abrir opções"
+            />
+          </View>
+        )}
+      />
 
-      <UICard
-        title={isEditing ? 'Editar item' : 'Novo item'}
-        className="mb-4"
-        titleClassName="text-base font-semibold text-zinc-700 dark:text-zinc-200"
+      <UIMessage tone="error" message={state.error} className="mb-3" />
+
+      <FlatList
+        data={state.items}
+        keyExtractor={item => item.id}
+        contentContainerClassName="gap-3 pb-10"
+        refreshing={state.isLoading}
+        onRefresh={actions.loadData}
+        ListEmptyComponent={
+          !state.isLoading ? (
+            <UICard className="p-6">
+              <Text style={{ color: colors.textMuted }} className="text-center">
+                Nenhum item nesta lista. Toque no + para adicionar.
+              </Text>
+            </UICard>
+          ) : null
+        }
+        renderItem={({ item }) => (
+          <UICard>
+            <View className="gap-2">
+              <View className="flex-row items-center justify-between gap-3">
+                <Text
+                  style={{ color: item.isPurchased ? colors.textMuted : colors.text }}
+                  className={`flex-1 text-lg font-semibold ${item.isPurchased ? 'line-through' : ''}`}
+                >
+                  {item.title}
+                </Text>
+
+                <Pressable
+                  onPress={() => actions.togglePurchased(item)}
+                  accessibilityLabel={item.isPurchased ? 'Desmarcar item' : 'Marcar item como comprado'}
+                  className="h-7 w-7 items-center justify-center rounded-full border"
+                  style={{
+                    backgroundColor: item.isPurchased ? colors.successSoft : colors.surfaceElevated,
+                    borderColor: item.isPurchased ? colors.success : colors.border,
+                  }}
+                >
+                  <UILucideIcon
+                    iconNode={item.isPurchased ? lucideIconNodes.circleCheck : lucideIconNodes.circle}
+                    size={16}
+                    color={item.isPurchased ? colors.success : colors.textMuted}
+                  />
+                </Pressable>
+              </View>
+
+              <View className="flex-row items-center justify-between gap-2">
+                <Text style={{ color: colors.textMuted }} className="text-sm">
+                  {item.quantity ?? '-'} {item.unit ?? ''}
+                </Text>
+
+                <View className="flex-row items-center gap-2">
+                  <UIIconButton
+                    iconNode={lucideIconNodes.pencil}
+                    size="sm"
+                    onPress={() => actions.startEdit(item)}
+                    accessibilityLabel={`Editar ${item.title}`}
+                  />
+
+                  <UIIconButton
+                    iconNode={lucideIconNodes.trash2}
+                    size="sm"
+                    tone="danger"
+                    onPress={() => onDeleteItem(item.id, item.title)}
+                    accessibilityLabel={`Excluir ${item.title}`}
+                  />
+                </View>
+              </View>
+            </View>
+          </UICard>
+        )}
+      />
+
+      <UIModal
+        visible={state.isItemModalOpen}
+        title={isEditing ? 'Editar item' : 'Adicionar item'}
+        onClose={actions.closeItemModal}
       >
         <View className="gap-2">
           <Controller
@@ -51,6 +171,7 @@ export const ListDetailsView = () => {
                 }}
                 placeholder="Nome do item"
                 errorMessage={errors.title?.message}
+                autoFocus
               />
             )}
           />
@@ -94,74 +215,26 @@ export const ListDetailsView = () => {
 
         <UIMessage tone="error" message={state.error} className="mt-3" />
 
-        <UIButton
-          disabled={state.isBusy}
-          loading={state.isBusy}
-          loadingLabel="Salvando..."
-          label={isEditing ? 'Salvar alterações' : 'Adicionar item'}
-          onPress={handleSubmit(actions.submitItem)}
-          containerClassName="mt-3"
-        />
-
-        {isEditing ? (
+        <View className="mt-4 flex-row gap-2">
           <UIButton
-            label="Cancelar edição"
+            label="Cancelar"
             variant="secondary"
-            onPress={actions.cancelEdit}
-            containerClassName="mt-2"
+            onPress={actions.closeItemModal}
+            containerClassName="flex-1"
           />
-        ) : null}
-      </UICard>
 
-      <FlatList
-        data={state.items}
-        keyExtractor={item => item.id}
-        contentContainerClassName="gap-3 pb-10"
-        refreshing={state.isLoading}
-        onRefresh={actions.loadData}
-        renderItem={({ item }) => (
-          <UICard>
-            <Text
-              className={`text-lg font-semibold ${
-                item.isPurchased ? 'text-zinc-400 line-through' : 'text-zinc-900 dark:text-zinc-100'
-              }`}
-            >
-              {item.title}
-            </Text>
+          <UIButton
+            disabled={state.isBusy}
+            loading={state.isBusy}
+            loadingLabel="Salvando..."
+            label={isEditing ? 'Salvar' : 'Adicionar'}
+            onPress={handleSubmit(actions.submitItem)}
+            containerClassName="flex-1"
+          />
+        </View>
+      </UIModal>
 
-            <Text className="mt-1 text-sm text-zinc-500 dark:text-zinc-300">
-              {item.quantity ?? '-'} {item.unit ?? ''}
-            </Text>
-
-            <View className="mt-3 flex-row gap-2">
-              <UIButton
-                label={item.isPurchased ? 'Desmarcar' : 'Marcar como comprado'}
-                variant={item.isPurchased ? 'warning' : 'success'}
-                size="sm"
-                onPress={() => actions.togglePurchased(item)}
-                containerClassName="flex-1"
-              />
-
-              <UIButton
-                label="Editar"
-                variant="secondary"
-                size="sm"
-                onPress={() => actions.startEdit(item)}
-                containerClassName="flex-1"
-              />
-
-              <UIButton
-                label="Excluir"
-                variant="dangerSoft"
-                size="sm"
-                onPress={() => actions.deleteItem(item.id)}
-                containerClassName="flex-1"
-              />
-            </View>
-          </UICard>
-        )}
-      />
+      <UIMenu visible={isMenuOpen} onClose={() => setIsMenuOpen(false)} items={menuItems} />
     </UIScreen>
   );
 };
-

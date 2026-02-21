@@ -1,3 +1,4 @@
+import { useAppColors } from '@infra/shared/theme/use-app-colors';
 import type { PressableProps } from 'react-native';
 import { Pressable, Text } from 'react-native';
 
@@ -24,10 +25,13 @@ export const UITextLinkButton = ({
   containerClassName,
   labelClassName,
 }: UITextLinkButtonProps) => {
+  const colors = useAppColors();
+
   return (
     <Pressable onPress={onPress} disabled={disabled} testID={testID} className={containerClassName}>
       <Text
-        className={`font-medium underline text-zinc-700 dark:text-zinc-200 ${alignClassMap[align]} ${labelClassName ?? ''}`.trim()}
+        style={{ color: colors.primaryStrong }}
+        className={`font-medium underline ${alignClassMap[align]} ${labelClassName ?? ''}`.trim()}
       >
         {label}
       </Text>

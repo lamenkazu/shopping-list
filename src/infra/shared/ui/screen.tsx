@@ -1,5 +1,6 @@
+import { useAppColors } from '@infra/shared/theme/use-app-colors';
 import type { ReactNode } from 'react';
-import { View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export interface UIScreenProps {
   children: ReactNode;
@@ -9,11 +10,15 @@ export interface UIScreenProps {
 }
 
 export const UIScreen = ({ children, centered, padded = true, className }: UIScreenProps) => {
+  const colors = useAppColors();
+
   return (
-    <View
-      className={`flex-1 bg-zinc-100 dark:bg-zinc-900 ${centered ? 'items-center justify-center' : ''} ${padded ? 'px-4 py-5' : ''} ${className ?? ''}`.trim()}
+    <SafeAreaView
+      edges={['top', 'left', 'right']}
+      style={{ backgroundColor: colors.background }}
+      className={`flex-1 ${centered ? 'items-center justify-center' : ''} ${padded ? 'px-4 pt-5 pb-5' : ''} ${className ?? ''}`.trim()}
     >
       {children}
-    </View>
+    </SafeAreaView>
   );
 };

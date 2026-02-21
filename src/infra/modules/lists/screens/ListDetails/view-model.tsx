@@ -13,8 +13,8 @@ import { defaultValues, type ItemFormData, itemSchema, toCreateDTO } from './mod
 type ViewModelState = {
   list: ShoppingListDTO | null;
   items: ShoppingItemDTO[];
-  generatedInvite: string | null;
   editingItemId: string | null;
+  isItemModalOpen: boolean;
   isLoading: boolean;
   isBusy: boolean;
   error: string | null;
@@ -56,8 +56,8 @@ export const useListDetailsViewModel = () => {
   const [state, setState] = useState<ViewModelState>({
     list: null,
     items: [],
-    generatedInvite: null,
     editingItemId: null,
+    isItemModalOpen: false,
     isLoading: false,
     isBusy: false,
     error: null,
@@ -111,6 +111,16 @@ export const useListDetailsViewModel = () => {
     };
   }, [listId]);
 
+  const openCreateItemModal = useCallback(() => {
+    form.reset(defaultValues);
+    setState(prev => ({ ...prev, editingItemId: null, isItemModalOpen: true }));
+  }, [form]);
+
+  const closeItemModal = useCallback(() => {
+    form.reset(defaultValues);
+    setState(prev => ({ ...prev, editingItemId: null, isItemModalOpen: false }));
+  }, [form]);
+
   const submitItem = useCallback(
     async (data: ItemFormData) => {
       if (!user?.id) {
@@ -136,7 +146,7 @@ export const useListDetailsViewModel = () => {
         }
 
         form.reset(defaultValues);
-        setState(prev => ({ ...prev, editingItemId: null }));
+        setState(prev => ({ ...prev, editingItemId: null, isItemModalOpen: false }));
         await loadData();
       } catch (error) {
         setState(prev => ({ ...prev, error: toUserMessage(error) }));
@@ -149,18 +159,13 @@ export const useListDetailsViewModel = () => {
 
   const startEdit = useCallback(
     (item: ShoppingItemDTO) => {
-      setState(prev => ({ ...prev, editingItemId: item.id }));
+      setState(prev => ({ ...prev, editingItemId: item.id, isItemModalOpen: true }));
       form.setValue('title', item.title);
       form.setValue('quantity', item.quantity !== null ? String(item.quantity) : '');
       form.setValue('unit', item.unit ?? '');
     },
     [form]
   );
-
-  const cancelEdit = useCallback(() => {
-    setState(prev => ({ ...prev, editingItemId: null }));
-    form.reset(defaultValues);
-  }, [form]);
 
   const togglePurchased = useCallback(
     async (item: ShoppingItemDTO) => {
@@ -194,7 +199,6 @@ export const useListDetailsViewModel = () => {
   const generateInvite = useCallback(async () => {
     try {
       const invite = await invitesRepository.createInvite({ listId });
-      setState(prev => ({ ...prev, generatedInvite: invite.url }));
       await Share.share({ message: invite.url });
     } catch (error) {
       setState(prev => ({ ...prev, error: toUserMessage(error) }));
@@ -206,13 +210,14 @@ export const useListDetailsViewModel = () => {
       loadData,
       submitItem,
       startEdit,
-      cancelEdit,
       togglePurchased,
       deleteItem,
       generateInvite,
+      openCreateItemModal,
+      closeItemModal,
       clearError: () => setState(prev => ({ ...prev, error: null })),
     }),
-    [cancelEdit, deleteItem, generateInvite, loadData, startEdit, submitItem, togglePurchased]
+    [closeItemModal, deleteItem, generateInvite, loadData, openCreateItemModal, startEdit, submitItem, togglePurchased]
   );
 
   return {
@@ -223,4 +228,3 @@ export const useListDetailsViewModel = () => {
     isEditing: Boolean(state.editingItemId),
   };
 };
-

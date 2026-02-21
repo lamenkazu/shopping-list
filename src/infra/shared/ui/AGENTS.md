@@ -18,13 +18,6 @@ Props (`UIScreenProps`):
 - `padded?: boolean` (default: `true`)
 - `className?: string`
 
-Uso:
-```tsx
-<UIScreen>
-  {/** conteúdo da tela **/}
-</UIScreen>
-```
-
 ### `card.tsx`
 Card genérico com título/subtítulo opcionais.
 
@@ -37,13 +30,6 @@ Props (`UICardProps`):
 - `subtitleClassName?: string`
 - `contentClassName?: string`
 
-Uso:
-```tsx
-<UICard title="Profile" subtitle="Email: user@email.com">
-  {/** conteúdo **/}
-</UICard>
-```
-
 ### `section.tsx`
 Composição pronta de `UIScreen + UICard` para seções com foco em título/subtítulo e conteúdo.
 
@@ -54,13 +40,6 @@ Props (`UISectionProps`):
 - `containerClassName?: string`
 - `cardClassName?: string`
 - `contentClassName?: string`
-
-Uso:
-```tsx
-<UISection title="Sign in" subtitle="Shared shopping list in real time.">
-  {/** conteúdo da seção **/}
-</UISection>
-```
 
 ### `button.tsx`
 Botão baseado em `Pressable`, com variações visuais reutilizáveis.
@@ -78,16 +57,6 @@ Props (`UIButtonProps`):
 - `containerClassName?: string`
 - `labelClassName?: string`
 
-Uso:
-```tsx
-<UIButton
-  label="Create list"
-  loading={isCreating}
-  loadingLabel="Creating..."
-  onPress={handleSubmit(onSubmit)}
-/>
-```
-
 ### `input.tsx`
 Input reutilizável com mensagem de erro acoplada.
 
@@ -100,18 +69,6 @@ Props (`UIInputProps`):
 - `inputClassName?: string`
 - `errorClassName?: string`
 
-Uso:
-```tsx
-<UIInput
-  placeholder="seu@email.com"
-  keyboardType="email-address"
-  autoCapitalize="none"
-  value={value}
-  onChangeText={onChange}
-  errorMessage={errors.email?.message}
-/>
-```
-
 ### `message.tsx`
 Mensagem de feedback com tom visual.
 
@@ -119,11 +76,6 @@ Props (`UIMessageProps`):
 - `tone: 'error' | 'success' | 'info'`
 - `message?: string | null`
 - `className?: string`
-
-Uso:
-```tsx
-<UIMessage tone="error" message={state.error} className="mt-3" />
-```
 
 ### `text-link-button.tsx`
 Botão textual baseado em `Pressable`, ideal para links com `Link asChild` do Expo Router.
@@ -137,15 +89,80 @@ Props (`UITextLinkButtonProps`):
 - `containerClassName?: string`
 - `labelClassName?: string`
 
+### `theme-mode-toggle.tsx`
+Componente de alternância de aparência (light/dark).
+
+Props (`UIThemeModeToggleProps`):
+- `mode: 'light' | 'dark'`
+- `onChange: (mode: 'light' | 'dark') => void`
+- `className?: string`
+
+### `lucide-icon.tsx`
+Renderização de ícones Lucide via `iconNode` em ambiente React Native.
+
+Props (`UILucideIconProps`):
+- `iconNode: LucideIconNode`
+- `size?: number`
+- `color?: string`
+- `strokeWidth?: number`
+- `style?: StyleProp<ViewStyle>`
+
+### `icon-nodes.ts`
+Catálogo local dos `iconNode` utilizados no app.
+
 Uso:
-```tsx
-<Link href={'/sign-up' as never} asChild>
-  <UITextLinkButton label="Create account" />
-</Link>
+```ts
+lucideIconNodes.plus
+lucideIconNodes.trash2
+lucideIconNodes.ellipsisVertical
 ```
+
+### `icon-button.tsx`
+Botão de ícone reutilizável com temas (`default` e `danger`).
+
+Props (`UIIconButtonProps`):
+- `iconNode: LucideIconNode`
+- `size?: 'sm' | 'md'`
+- `tone?: 'default' | 'danger'`
+- `onPress?: () => void`
+- `disabled?: boolean`
+- `testID?: string`
+- `accessibilityLabel?: string`
+- `containerClassName?: string`
+
+### `header.tsx`
+Header visual da tela (custom) com suporte a voltar e ações à direita.
+
+Props (`UIHeaderProps`):
+- `title: string`
+- `subtitle?: string`
+- `onBack?: () => void`
+- `rightSlot?: ReactNode`
+- `backIconNode?: LucideIconNode`
+- `className?: string`
+
+### `modal.tsx`
+Modal genérica com card de conteúdo.
+
+Props (`UIModalProps`):
+- `visible: boolean`
+- `title: string`
+- `onClose: () => void`
+- `children: ReactNode`
+
+### `menu.tsx`
+Menu de ações em overlay para opções rápidas (ex.: menu de 3 pontos).
+
+Props:
+- `UIMenuProps`
+- `UIMenuItem`
 
 ## Convenções
 - `shared/ui` deve permanecer genérico (sem semântica de feature).
 - Se um componente for específico de domínio/tela, criar em `modules/<feature>/components`.
 - Componentes de `shared/ui` não devem conter regra de negócio.
-- Priorizar composição de `screen`, `card`, `button`, `input` e `message` antes de adicionar Tailwind diretamente nas views.
+- Priorizar composição de `screen`, `card`, `button`, `input`, `icon-button`, `header`, `modal` e `menu` antes de adicionar Tailwind direto nas views.
+
+## Tema
+- Os componentes base de UI usam o tema central (`src/infra/shared/theme/theme.ts`) via `useAppColors`.
+- Evitar hardcode de cores Tailwind em componentes compartilhados.

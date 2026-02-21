@@ -1,3 +1,4 @@
+import { useAppColors } from '@infra/shared/theme/use-app-colors';
 import type { TextInputProps } from 'react-native';
 import { Text, TextInput, View } from 'react-native';
 
@@ -20,18 +21,25 @@ export const UIInput = ({
   errorClassName,
   ...rest
 }: UIInputProps) => {
+  const colors = useAppColors();
+
   return (
     <View className={containerClassName}>
       <TextInput
         value={value}
         onChangeText={onChangeText}
-        placeholderTextColor={placeholderTextColor ?? '#71717a'}
-        className={`rounded-xl border border-zinc-300 px-4 py-3 text-zinc-900 dark:border-zinc-700 dark:text-zinc-100 ${inputClassName ?? ''}`.trim()}
+        placeholderTextColor={placeholderTextColor ?? colors.placeholder}
+        style={{
+          backgroundColor: colors.inputBackground,
+          borderColor: errorMessage ? colors.danger : colors.border,
+          color: colors.text,
+        }}
+        className={`rounded-xl border px-4 py-3 ${inputClassName ?? ''}`.trim()}
         {...rest}
       />
 
       {errorMessage ? (
-        <Text className={`mt-1 text-sm text-red-600 ${errorClassName ?? ''}`.trim()}>
+        <Text style={{ color: colors.danger }} className={`mt-1 text-sm ${errorClassName ?? ''}`.trim()}>
           {errorMessage}
         </Text>
       ) : null}

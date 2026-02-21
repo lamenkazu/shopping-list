@@ -1,3 +1,4 @@
+import { useAppColors } from '@infra/shared/theme/use-app-colors';
 import type { ReactNode } from 'react';
 import { Text, View } from 'react-native';
 
@@ -20,21 +21,36 @@ export const UICard = ({
   subtitleClassName,
   contentClassName,
 }: UICardProps) => {
+  const colors = useAppColors();
+
   return (
-    <View className={`rounded-2xl bg-white p-4 dark:bg-zinc-800 ${className ?? ''}`.trim()}>
+    <View
+      style={{
+        backgroundColor: colors.surface,
+        borderColor: colors.border,
+      }}
+      className={`rounded-2xl border p-4 ${className ?? ''}`.trim()}
+    >
       {title ? (
-        <Text className={`text-xl font-bold text-zinc-900 dark:text-zinc-100 ${titleClassName ?? ''}`.trim()}>
+        <Text style={{ color: colors.text }} className={`text-xl font-bold ${titleClassName ?? ''}`.trim()}>
           {title}
         </Text>
       ) : null}
 
       {subtitle ? (
-        <Text className={`mt-2 text-zinc-600 dark:text-zinc-300 ${subtitleClassName ?? ''}`.trim()}>
+        <Text
+          style={{ color: colors.textMuted }}
+          className={`mt-2 ${subtitleClassName ?? ''}`.trim()}
+        >
           {subtitle}
         </Text>
       ) : null}
 
-      {children ? <View className={`${title || subtitle ? 'mt-3' : ''} ${contentClassName ?? ''}`.trim()}>{children}</View> : null}
+      {children ? (
+        <View className={`${title || subtitle ? 'mt-3' : ''} ${contentClassName ?? ''}`.trim()}>
+          {children}
+        </View>
+      ) : null}
     </View>
   );
 };

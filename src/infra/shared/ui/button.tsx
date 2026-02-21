@@ -1,4 +1,5 @@
-import type { PressableProps } from 'react-native';
+import { useAppColors } from '@infra/shared/theme/use-app-colors';
+import type { PressableProps, StyleProp, TextStyle, ViewStyle } from 'react-native';
 import { Pressable, Text } from 'react-native';
 
 export type UIButtonVariant =
@@ -24,26 +25,6 @@ export interface UIButtonProps
   labelClassName?: string;
 }
 
-const containerVariantClassMap: Record<UIButtonVariant, string> = {
-  primary: 'bg-zinc-900 dark:bg-zinc-100',
-  secondary: 'bg-zinc-200 dark:bg-zinc-700',
-  danger: 'bg-red-600 dark:bg-red-700',
-  dangerSoft: 'bg-red-100 dark:bg-red-900/40',
-  info: 'bg-blue-600',
-  success: 'bg-emerald-200 dark:bg-emerald-700',
-  warning: 'bg-amber-200 dark:bg-amber-700',
-};
-
-const labelVariantClassMap: Record<UIButtonVariant, string> = {
-  primary: 'text-zinc-100 dark:text-zinc-900',
-  secondary: 'text-zinc-900 dark:text-zinc-100',
-  danger: 'text-white',
-  dangerSoft: 'text-red-700 dark:text-red-300',
-  info: 'text-white',
-  success: 'text-zinc-900 dark:text-zinc-100',
-  warning: 'text-zinc-900 dark:text-zinc-100',
-};
-
 const containerSizeClassMap: Record<UIButtonSize, string> = {
   md: 'rounded-xl px-4 py-3',
   sm: 'rounded-lg px-3 py-2',
@@ -67,7 +48,46 @@ export const UIButton = ({
   containerClassName,
   labelClassName,
 }: UIButtonProps) => {
+  const colors = useAppColors();
   const isDisabled = Boolean(disabled || loading);
+
+  const containerVariantStyleMap: Record<UIButtonVariant, StyleProp<ViewStyle>> = {
+    primary: {
+      backgroundColor: colors.primary,
+    },
+    secondary: {
+      backgroundColor: colors.surfaceElevated,
+      borderColor: colors.border,
+      borderWidth: 1,
+    },
+    danger: {
+      backgroundColor: colors.danger,
+    },
+    dangerSoft: {
+      backgroundColor: colors.dangerSoft,
+      borderColor: colors.danger,
+      borderWidth: 1,
+    },
+    info: {
+      backgroundColor: colors.info,
+    },
+    success: {
+      backgroundColor: colors.success,
+    },
+    warning: {
+      backgroundColor: colors.warning,
+    },
+  };
+
+  const labelVariantStyleMap: Record<UIButtonVariant, StyleProp<TextStyle>> = {
+    primary: { color: colors.primaryContrast },
+    secondary: { color: colors.text },
+    danger: { color: colors.textInverse },
+    dangerSoft: { color: colors.dangerContrast },
+    info: { color: colors.textInverse },
+    success: { color: colors.textInverse },
+    warning: { color: colors.textInverse },
+  };
 
   return (
     <Pressable
@@ -75,10 +95,12 @@ export const UIButton = ({
       onPress={onPress}
       testID={testID}
       accessibilityLabel={accessibilityLabel}
-      className={`${containerSizeClassMap[size]} ${containerVariantClassMap[variant]} ${containerClassName ?? ''}`.trim()}
+      style={[containerVariantStyleMap[variant], isDisabled ? { opacity: 0.6 } : null]}
+      className={`${containerSizeClassMap[size]} ${containerClassName ?? ''}`.trim()}
     >
       <Text
-        className={`text-center ${labelSizeClassMap[size]} ${labelVariantClassMap[variant]} ${labelClassName ?? ''}`.trim()}
+        style={labelVariantStyleMap[variant]}
+        className={`text-center ${labelSizeClassMap[size]} ${labelClassName ?? ''}`.trim()}
       >
         {loading ? (loadingLabel ?? label) : label}
       </Text>

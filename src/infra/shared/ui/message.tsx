@@ -1,3 +1,4 @@
+import { useAppColors } from '@infra/shared/theme/use-app-colors';
 import { Text } from 'react-native';
 
 export type UIMessageTone = 'error' | 'success' | 'info';
@@ -8,18 +9,22 @@ export interface UIMessageProps {
   className?: string;
 }
 
-const toneClassMap: Record<UIMessageTone, string> = {
-  error: 'text-red-600',
-  success: 'text-emerald-700',
-  info: 'text-zinc-600 dark:text-zinc-300',
-};
-
 export const UIMessage = ({ tone, message, className }: UIMessageProps) => {
+  const colors = useAppColors();
+
   if (!message) {
     return null;
   }
 
+  const toneStyleMap = {
+    error: { color: colors.danger },
+    success: { color: colors.success },
+    info: { color: colors.textMuted },
+  } as const;
+
   return (
-    <Text className={`text-sm ${toneClassMap[tone]} ${className ?? ''}`.trim()}>{message}</Text>
+    <Text style={toneStyleMap[tone]} className={`text-sm ${className ?? ''}`.trim()}>
+      {message}
+    </Text>
   );
 };

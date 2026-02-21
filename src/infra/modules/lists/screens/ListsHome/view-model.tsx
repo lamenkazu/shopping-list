@@ -12,6 +12,7 @@ type ViewModelState = {
   lists: ShoppingListDTO[];
   isLoading: boolean;
   isCreating: boolean;
+  isCreateModalOpen: boolean;
   error: string | null;
 };
 
@@ -25,6 +26,7 @@ export const useListsHomeViewModel = () => {
     lists: [],
     isLoading: false,
     isCreating: false,
+    isCreateModalOpen: false,
     error: null,
   });
 
@@ -53,6 +55,15 @@ export const useListsHomeViewModel = () => {
     }, [loadLists])
   );
 
+  const openCreateModal = useCallback(() => {
+    setState(prev => ({ ...prev, isCreateModalOpen: true }));
+  }, []);
+
+  const closeCreateModal = useCallback(() => {
+    form.reset(defaultValues);
+    setState(prev => ({ ...prev, isCreateModalOpen: false }));
+  }, [form]);
+
   const submit = useCallback(
     async (data: CreateListFormData) => {
       if (!user?.id) {
@@ -71,6 +82,7 @@ export const useListsHomeViewModel = () => {
 
         await listsRepository.createList(toDTO(data));
         form.reset(defaultValues);
+        setState(prev => ({ ...prev, isCreateModalOpen: false }));
         await loadLists();
       } catch (error) {
         setState(prev => ({ ...prev, error: toUserMessage(error) }));
@@ -98,9 +110,11 @@ export const useListsHomeViewModel = () => {
       loadLists,
       submit,
       deleteList,
+      openCreateModal,
+      closeCreateModal,
       clearError: () => setState(prev => ({ ...prev, error: null })),
     }),
-    [deleteList, loadLists, submit]
+    [closeCreateModal, deleteList, loadLists, openCreateModal, submit]
   );
 
   return {
@@ -109,4 +123,3 @@ export const useListsHomeViewModel = () => {
     actions,
   };
 };
-
