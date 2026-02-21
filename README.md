@@ -1,42 +1,99 @@
-# Welcome to your Expo app 👋
+# Realtime Shopping (Mobile)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplicativo mobile de lista de compras compartilhada em tempo real.
 
-## Get started
+## Sobre o projeto
+Este app permite criar listas de compras e compartilhar com outras pessoas.
+Todos os participantes da mesma lista visualizam atualizações em tempo real (após salvar alterações), como:
 
-1. Install dependencies
+- criar e excluir listas
+- criar, editar e excluir itens
+- marcar e desmarcar item como comprado
+- gerar e aceitar convite por link
+- autenticação de usuário (login, cadastro e recuperação de senha)
 
-   ```bash
-   npm install
-   ```
+## Objetivo
+Facilitar colaboração em listas de compras (família, casal, amigos, etc.) com sincronização online.
 
-2. Start the app
+## Tecnologias utilizadas
+- React Native
+- Expo
+- Expo Router (roteamento baseado em arquivos)
+- TypeScript
+- NativeWind (estilização)
+- Supabase (auth, banco e realtime)
+- React Hook Form
+- Zod
+- Biome (lint e formatação)
 
-   ```bash
-   npx expo start
-   ```
+## Pré-requisitos
+- Node.js 20+
+- pnpm
+- Android Studio (para emulador Android) ou dispositivo físico com Expo Go
+- Conta e projeto no Supabase
 
-In the output, you'll find options to open the app in a
+## Configuração do ambiente
+1. Instale as dependências:
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+```bash
+pnpm install
+```
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+2. Crie o arquivo `.env` com base no `.env.example`:
 
-## Learn more
+```bash
+cp .env.example .env
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+3. Preencha as variáveis do Supabase no `.env`:
+- `EXPO_PUBLIC_SUPABASE_URL`
+- `EXPO_PUBLIC_SUPABASE_KEY`
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Como executar
+### Iniciar servidor Expo
+```bash
+pnpm start
+```
 
-## Join the community
+### Rodar no Android
+```bash
+pnpm android
+```
 
-Join our community of developers creating universal apps.
+### Rodar no iOS
+```bash
+pnpm ios
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### Rodar no Web
+```bash
+pnpm web
+```
 
+## Scripts úteis
+- `pnpm lint` -> validação com Biome
+- `pnpm lint:fix` -> correções automáticas de lint
+- `pnpm format` -> formatação de código
 
+## Banco de dados (Supabase)
+As migrations SQL estão em `supabase/migrations`.
+Para sincronizar schema com seu projeto Supabase, use a CLI do Supabase no diretório `mobile`.
+
+Exemplo:
+```bash
+npx supabase db push
+```
+
+## Estrutura resumida
+- `app/` -> rotas do Expo Router
+- `src/core/` -> contratos, DTOs, erros e regras de domínio
+- `src/infra/` -> implementação da aplicação (telas, repositórios, providers, UI)
+- `src/infra/shared/ui/` -> componentes visuais reutilizáveis
+- `supabase/` -> schema e migrations
+
+## Status atual
+Projeto em desenvolvimento ativo com foco em:
+- melhorias de UI/UX
+- arquitetura MVVM
+- separação `core` e `infra`
+- evolução do backend leve para operações sensíveis e IA no futuro
