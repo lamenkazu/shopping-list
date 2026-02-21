@@ -13,9 +13,9 @@ export const defaultValues: SignInFormData = {
   password: '',
 };
 
-export function toDTO(data: SignInFormData): SignInDTO {
+export const toDTO = (data: SignInFormData): SignInDTO => {
   return {
     email: data.email.trim(),
     password: data.password,
   };
-}
+};

@@ -14,7 +14,7 @@ import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 
 type ShoppingItemRow = Database['public']['Tables']['shopping_items']['Row'];
 
-function mapShoppingItem(row: ShoppingItemRow): ShoppingItemDTO {
+const mapShoppingItem = (row: ShoppingItemRow): ShoppingItemDTO => {
   return {
     id: row.id,
     listId: row.list_id,
@@ -29,11 +29,11 @@ function mapShoppingItem(row: ShoppingItemRow): ShoppingItemDTO {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
-}
+};
 
-function toRealtimeEvent(
+const toRealtimeEvent = (
   payload: RealtimePostgresChangesPayload<ShoppingItemRow>
-): ShoppingItemRealtimeEvent {
+): ShoppingItemRealtimeEvent => {
   if (payload.eventType === 'DELETE') {
     return {
       type: 'DELETE',
@@ -52,7 +52,7 @@ function toRealtimeEvent(
     type: 'UPDATE',
     item: mapShoppingItem(payload.new),
   };
-}
+};
 
 export class ItemsSupabaseRepository implements ItemsRepository {
   async fetchItemsByList(listId: string): Promise<ShoppingItemDTO[]> {

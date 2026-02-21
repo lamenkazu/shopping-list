@@ -26,11 +26,11 @@ export const defaultValues: ItemFormData = {
   unit: '',
 };
 
-export function toCreateDTO(
+export const toCreateDTO = (
   data: ItemFormData,
   listId: string,
   userId: string
-): CreateShoppingItemDTO {
+): CreateShoppingItemDTO => {
   const normalizedQuantity = data.quantity?.trim() ? Number(data.quantity.replace(',', '.')) : null;
 
   return {
@@ -40,4 +40,4 @@ export function toCreateDTO(
     unit: data.unit?.trim() ? data.unit.trim() : null,
     userId,
   };
-}
+};

@@ -25,10 +25,10 @@ const listsRepository = di.getListsRepository();
 const itemsRepository = di.getItemsRepository();
 const invitesRepository = di.getInvitesRepository();
 
-function applyRealtimeEvent(
+const applyRealtimeEvent = (
   previous: ShoppingItemDTO[],
   event: { type: 'INSERT' | 'UPDATE' | 'DELETE'; item?: ShoppingItemDTO; itemId?: string }
-) {
+) => {
   if (event.type === 'DELETE' && event.itemId) {
     return previous.filter(item => item.id !== event.itemId);
   }
@@ -46,9 +46,9 @@ function applyRealtimeEvent(
   const clone = [...previous];
   clone[index] = event.item;
   return clone;
-}
+};
 
-export function useListDetailsViewModel() {
+export const useListDetailsViewModel = () => {
   const { user } = useAuth();
   const params = useLocalSearchParams<{ listId: string }>();
   const listId = typeof params.listId === 'string' ? params.listId : '';
@@ -222,4 +222,4 @@ export function useListDetailsViewModel() {
     actions,
     isEditing: Boolean(state.editingItemId),
   };
-}
+};

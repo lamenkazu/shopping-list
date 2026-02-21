@@ -11,7 +11,7 @@ type ViewModelState = {
 
 const invitesRepository = DependencyInjectionFactory.getInstance().getInvitesRepository();
 
-export function useAcceptInviteViewModel() {
+export const useAcceptInviteViewModel = () => {
   const router = useRouter();
   const params = useLocalSearchParams<{ token: string }>();
   const token = typeof params.token === 'string' ? params.token : '';
@@ -51,4 +51,4 @@ export function useAcceptInviteViewModel() {
     state,
     actions,
   };
-}
+};

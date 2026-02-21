@@ -18,7 +18,7 @@ type ViewModelState = {
 const listsRepository = DependencyInjectionFactory.getInstance().getListsRepository();
 const authRepository = DependencyInjectionFactory.getInstance().getAuthRepository();
 
-export function useListsHomeViewModel() {
+export const useListsHomeViewModel = () => {
   const { user } = useAuth();
 
   const [state, setState] = useState<ViewModelState>({
@@ -108,4 +108,4 @@ export function useListsHomeViewModel() {
     state,
     actions,
   };
-}
+};

@@ -12,14 +12,14 @@ import { supabase } from '@infra/data/supabase/client';
 import { toAppError } from '@infra/data/supabase/error/to-app-error';
 import type { Session, User } from '@supabase/supabase-js';
 
-function mapUser(user: User): AuthUserDTO {
+const mapUser = (user: User): AuthUserDTO => {
   return {
     id: user.id,
     email: user.email ?? null,
   };
-}
+};
 
-function mapSession(session: Session | null): AuthSessionDTO | null {
+const mapSession = (session: Session | null): AuthSessionDTO | null => {
   if (!session) {
     return null;
   }
@@ -27,7 +27,7 @@ function mapSession(session: Session | null): AuthSessionDTO | null {
   return {
     user: mapUser(session.user),
   };
-}
+};
 
 export class AuthSupabaseRepository implements AuthRepository {
   async getSession(): Promise<AuthSessionDTO | null> {

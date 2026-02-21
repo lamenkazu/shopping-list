@@ -6,7 +6,7 @@ type ViewModelState = {
   error: string | null;
 };
 
-export function useProfileViewModel() {
+export const useProfileViewModel = () => {
   const router = useRouter();
   const { signOut, user } = useAuth();
 
@@ -38,4 +38,4 @@ export function useProfileViewModel() {
     actions,
     user,
   };
-}
+};

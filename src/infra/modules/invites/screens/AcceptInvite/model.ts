@@ -4,8 +4,8 @@ export type AcceptInviteModel = {
   token: string;
 };
 
-export function toDTO(model: AcceptInviteModel): AcceptInviteDTO {
+export const toDTO = (model: AcceptInviteModel): AcceptInviteDTO => {
   return {
     token: model.token,
   };
-}
+};

@@ -3,7 +3,7 @@ import { FlatList, Pressable, Text, TextInput, View } from 'react-native';
 
 import { useListDetailsViewModel } from './view-model';
 
-export function ListDetailsView() {
+export const ListDetailsView = () => {
   const { form, state, actions, isEditing } = useListDetailsViewModel();
 
   const {
@@ -185,4 +185,4 @@ export function ListDetailsView() {
       />
     </View>
   );
-}
+};

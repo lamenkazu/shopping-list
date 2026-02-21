@@ -1,4 +1,3 @@
-import SignInScreen from '@infra/modules/auth/screens/SignIn';
+import { SignInView } from '@infra/modules/auth/screens/SignIn/view';
 
-export default SignInScreen;
-
+export default SignInView;

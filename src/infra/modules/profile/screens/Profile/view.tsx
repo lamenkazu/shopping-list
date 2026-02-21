@@ -2,7 +2,7 @@ import { Pressable, Text, View } from 'react-native';
 
 import { useProfileViewModel } from './view-model';
 
-export function ProfileView() {
+export const ProfileView = () => {
   const { state, actions, user } = useProfileViewModel();
 
   return (
@@ -21,4 +21,4 @@ export function ProfileView() {
       </View>
     </View>
   );
-}
+};

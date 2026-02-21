@@ -3,7 +3,7 @@ import type { ErrorCode } from '@core/error/error-codes';
 import { ERROR_CODES } from '@core/error/error-codes';
 import { mapSupabaseCodeToErrorCode } from '@infra/data/supabase/error/map-supabase-code';
 
-export function toAppError(error: unknown, fallbackCode: ErrorCode): AppError {
+export const toAppError = (error: unknown, fallbackCode: ErrorCode): AppError => {
   if (error instanceof AppError) {
     return error;
   }
@@ -25,12 +25,12 @@ export function toAppError(error: unknown, fallbackCode: ErrorCode): AppError {
     message: 'Erro inesperado, tente novamente.',
     cause: error,
   });
-}
+};
 
-export function toUserMessage(error: unknown): string {
+export const toUserMessage = (error: unknown): string => {
   if (error instanceof AppError) {
     return error.message;
   }
 
   return 'Erro inesperado, tente novamente.';
-}
+};

@@ -11,8 +11,8 @@ export const defaultValues: ForgotPasswordFormData = {
   email: '',
 };
 
-export function toDTO(data: ForgotPasswordFormData): ResetPasswordDTO {
+export const toDTO = (data: ForgotPasswordFormData): ResetPasswordDTO => {
   return {
     email: data.email.trim(),
   };
-}
+};

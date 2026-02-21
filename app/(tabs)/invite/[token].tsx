@@ -1,4 +1,3 @@
-import AcceptInviteScreen from '@infra/modules/invites/screens/AcceptInvite';
+import { AcceptInviteView } from '@infra/modules/invites/screens/AcceptInvite/view';
 
-export default AcceptInviteScreen;
-
+export default AcceptInviteView;

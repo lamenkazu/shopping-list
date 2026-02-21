@@ -6,7 +6,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
-function AppNavigator() {
+const AppNavigator = () => {
   const { isLoading, session } = useAuth();
   const segments = useSegments();
   const router = useRouter();
@@ -51,9 +51,9 @@ function AppNavigator() {
       <Stack.Screen name="(tabs)" />
     </Stack>
   );
-}
+};
 
-export default function RootNavigator() {
+export const RootNavigator = () => {
   const colorScheme = useColorScheme();
 
   return (
@@ -64,4 +64,4 @@ export default function RootNavigator() {
       <StatusBar style="auto" />
     </ThemeProvider>
   );
-}
+};

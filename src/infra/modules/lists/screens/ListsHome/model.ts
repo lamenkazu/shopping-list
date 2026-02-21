@@ -11,8 +11,8 @@ export const defaultValues: CreateListFormData = {
   name: '',
 };
 
-export function toDTO(data: CreateListFormData): CreateShoppingListDTO {
+export const toDTO = (data: CreateListFormData): CreateShoppingListDTO => {
   return {
     name: data.name.trim(),
   };
-}
+};

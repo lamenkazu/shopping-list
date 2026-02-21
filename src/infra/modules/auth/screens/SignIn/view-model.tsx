@@ -9,7 +9,7 @@ type ViewModelState = {
   error: string | null;
 };
 
-export function useSignInViewModel() {
+export const useSignInViewModel = () => {
   const router = useRouter();
   const params = useLocalSearchParams<{ redirect?: string }>();
   const { signIn } = useAuth();
@@ -55,4 +55,4 @@ export function useSignInViewModel() {
     state,
     actions,
   };
-}
+};

@@ -4,7 +4,7 @@ import { Alert, FlatList, Pressable, Text, TextInput, View } from 'react-native'
 
 import { useListsHomeViewModel } from './view-model';
 
-export function ListsHomeView() {
+export const ListsHomeView = () => {
   const router = useRouter();
   const { form, state, actions } = useListsHomeViewModel();
 
@@ -14,7 +14,7 @@ export function ListsHomeView() {
     formState: { errors },
   } = form;
 
-  function onDeleteList(listId: string) {
+  const onDeleteList = (listId: string) => {
     Alert.alert('Delete list', 'This action cannot be undone.', [
       { text: 'Cancel', style: 'cancel' },
       {
@@ -25,7 +25,7 @@ export function ListsHomeView() {
         },
       },
     ]);
-  }
+  };
 
   return (
     <View className="flex-1 bg-zinc-100 px-4 py-5 dark:bg-zinc-900">
@@ -116,4 +116,4 @@ export function ListsHomeView() {
       />
     </View>
   );
-}
+};

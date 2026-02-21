@@ -9,7 +9,7 @@ type ViewModelState = {
   success: string | null;
 };
 
-export function useForgotPasswordViewModel() {
+export const useForgotPasswordViewModel = () => {
   const { resetPassword } = useAuth();
 
   const [state, setState] = useState<ViewModelState>({
@@ -56,4 +56,4 @@ export function useForgotPasswordViewModel() {
     state,
     actions,
   };
-}
+};

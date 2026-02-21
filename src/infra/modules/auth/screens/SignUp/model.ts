@@ -15,10 +15,10 @@ export const defaultValues: SignUpFormData = {
   password: '',
 };
 
-export function toDTO(data: SignUpFormData): SignUpDTO {
+export const toDTO = (data: SignUpFormData): SignUpDTO => {
   return {
     fullName: data.fullName.trim(),
     email: data.email.trim(),
     password: data.password,
   };
-}
+};

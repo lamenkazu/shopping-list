@@ -1,4 +1,3 @@
-import ProfileScreen from '@infra/modules/profile/screens/Profile';
+import { ProfileView } from '@infra/modules/profile/screens/Profile/view';
 
-export default ProfileScreen;
-
+export default ProfileView;

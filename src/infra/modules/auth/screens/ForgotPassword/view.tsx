@@ -4,7 +4,7 @@ import { Pressable, Text, TextInput, View } from 'react-native';
 
 import { useForgotPasswordViewModel } from './view-model';
 
-export function ForgotPasswordView() {
+export const ForgotPasswordView = () => {
   const { form, state, actions } = useForgotPasswordViewModel();
   const {
     control,
@@ -73,4 +73,4 @@ export function ForgotPasswordView() {
       </View>
     </View>
   );
-}
+};

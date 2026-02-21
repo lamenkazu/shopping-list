@@ -11,7 +11,7 @@ import { toAppError } from '@infra/data/supabase/error/to-app-error';
 
 type ShoppingListRow = Database['public']['Tables']['shopping_lists']['Row'];
 
-function mapShoppingList(row: ShoppingListRow): ShoppingListDTO {
+const mapShoppingList = (row: ShoppingListRow): ShoppingListDTO => {
   return {
     id: row.id,
     name: row.name,
@@ -19,7 +19,7 @@ function mapShoppingList(row: ShoppingListRow): ShoppingListDTO {
     updatedAt: row.updated_at,
     createdBy: row.created_by,
   };
-}
+};
 
 export class ListsSupabaseRepository implements ListsRepository {
   async fetchLists(): Promise<ShoppingListDTO[]> {

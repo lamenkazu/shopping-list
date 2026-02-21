@@ -1,4 +1,3 @@
-import SignUpScreen from '@infra/modules/auth/screens/SignUp';
+import { SignUpView } from '@infra/modules/auth/screens/SignUp/view';
 
-export default SignUpScreen;
-
+export default SignUpView;

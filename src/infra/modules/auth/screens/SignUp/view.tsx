@@ -4,7 +4,7 @@ import { Pressable, Text, TextInput, View } from 'react-native';
 
 import { useSignUpViewModel } from './view-model';
 
-export function SignUpView() {
+export const SignUpView = () => {
   const { form, state, actions } = useSignUpViewModel();
   const {
     control,
@@ -112,4 +112,4 @@ export function SignUpView() {
       </View>
     </View>
   );
-}
+};

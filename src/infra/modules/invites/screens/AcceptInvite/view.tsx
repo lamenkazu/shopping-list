@@ -2,7 +2,7 @@ import { Pressable, Text, View } from 'react-native';
 
 import { useAcceptInviteViewModel } from './view-model';
 
-export function AcceptInviteView() {
+export const AcceptInviteView = () => {
   const { state, actions } = useAcceptInviteViewModel();
 
   return (
@@ -29,4 +29,4 @@ export function AcceptInviteView() {
       </View>
     </View>
   );
-}
+};

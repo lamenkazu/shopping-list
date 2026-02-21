@@ -1,4 +1,3 @@
-import ListDetailsScreen from '@infra/modules/lists/screens/ListDetails';
+import { ListDetailsView } from '@infra/modules/lists/screens/ListDetails/view';
 
-export default ListDetailsScreen;
-
+export default ListDetailsView;

@@ -1,4 +1,3 @@
-import ListsHomeScreen from '@infra/modules/lists/screens/ListsHome';
+import { ListsHomeView } from '@infra/modules/lists/screens/ListsHome/view';
 
-export default ListsHomeScreen;
-
+export default ListsHomeView;

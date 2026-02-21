@@ -9,7 +9,7 @@ type ViewModelState = {
   error: string | null;
 };
 
-export function useSignUpViewModel() {
+export const useSignUpViewModel = () => {
   const router = useRouter();
   const { signUp } = useAuth();
 
@@ -58,4 +58,4 @@ export function useSignUpViewModel() {
     state,
     actions,
   };
-}
+};

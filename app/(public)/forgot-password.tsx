@@ -1,4 +1,3 @@
-import ForgotPasswordScreen from '@infra/modules/auth/screens/ForgotPassword';
+import { ForgotPasswordView } from '@infra/modules/auth/screens/ForgotPassword/view';
 
-export default ForgotPasswordScreen;
-
+export default ForgotPasswordView;

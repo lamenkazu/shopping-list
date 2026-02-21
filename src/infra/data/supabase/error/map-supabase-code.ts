@@ -1,10 +1,10 @@
 import type { ErrorCode } from '@core/error/error-codes';
 import { ERROR_CODES } from '@core/error/error-codes';
 
-export function mapSupabaseCodeToErrorCode(
+export const mapSupabaseCodeToErrorCode = (
   supabaseCode: string | undefined,
   fallback: ErrorCode
-): ErrorCode {
+): ErrorCode => {
   if (!supabaseCode) {
     return fallback;
   }
@@ -16,4 +16,4 @@ export function mapSupabaseCodeToErrorCode(
   }
 
   return fallback;
-}
+};

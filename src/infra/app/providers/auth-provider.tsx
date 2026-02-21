@@ -24,7 +24,7 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 const authRepository = DependencyInjectionFactory.getInstance().getAuthRepository();
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<AuthSessionDTO | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -110,9 +110,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
+};
 
-export function useAuth() {
+export const useAuth = () => {
   const context = useContext(AuthContext);
 
   if (!context) {
@@ -120,4 +120,4 @@ export function useAuth() {
   }
 
   return context;
-}
+};
