@@ -2,9 +2,9 @@ import type { SignUpDTO } from '@core/dto/auth.dto';
 import { z } from 'zod';
 
 export const signUpSchema = z.object({
-  fullName: z.string().min(2, 'Full name must have at least 2 characters.'),
-  email: z.email('Enter a valid email.'),
-  password: z.string().min(6, 'Password must have at least 6 characters.'),
+  fullName: z.string().min(2, 'O nome completo deve ter no mínimo 2 caracteres.'),
+  email: z.email('Informe um e-mail válido.'),
+  password: z.string().min(6, 'A senha deve ter no mínimo 6 caracteres.'),
 });
 
 export type SignUpFormData = z.infer<typeof signUpSchema>;
@@ -22,3 +22,4 @@ export const toDTO = (data: SignUpFormData): SignUpDTO => {
     password: data.password,
   };
 };
+

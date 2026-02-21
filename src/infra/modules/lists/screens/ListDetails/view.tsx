@@ -1,6 +1,10 @@
+import { UIButton } from '@infra/shared/ui/button';
+import { UICard } from '@infra/shared/ui/card';
+import { UIInput } from '@infra/shared/ui/input';
+import { UIMessage } from '@infra/shared/ui/message';
+import { UIScreen } from '@infra/shared/ui/screen';
 import { Controller } from 'react-hook-form';
-import { FlatList, Pressable, Text, TextInput, View } from 'react-native';
-
+import { FlatList, Text, View } from 'react-native';
 import { useListDetailsViewModel } from './view-model';
 
 export const ListDetailsView = () => {
@@ -13,51 +17,41 @@ export const ListDetailsView = () => {
   } = form;
 
   return (
-    <View className="flex-1 bg-zinc-100 px-4 py-5 dark:bg-zinc-900">
-      <View className="mb-4 rounded-2xl bg-white p-4 dark:bg-zinc-800">
-        <Text className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
-          {state.list?.name ?? 'List'}
-        </Text>
-
-        <Pressable
+    <UIScreen>
+      <UICard title={state.list?.name ?? 'Lista'} className="mb-4">
+        <UIButton
+          label="Gerar link de convite"
+          variant="info"
           onPress={actions.generateInvite}
-          className="mt-3 rounded-xl bg-blue-600 px-4 py-3"
-        >
-          <Text className="text-center font-semibold text-white">Generate invite link</Text>
-        </Pressable>
+          containerClassName="mt-3"
+        />
 
-        {state.generatedInvite ? (
-          <Text className="mt-2 text-xs text-zinc-500 dark:text-zinc-300">
-            Latest invite: {state.generatedInvite}
-          </Text>
-        ) : null}
-      </View>
+        <UIMessage
+          tone="info"
+          message={state.generatedInvite ? `Último convite: ${state.generatedInvite}` : null}
+          className="mt-2 text-xs text-zinc-500 dark:text-zinc-300"
+        />
+      </UICard>
 
-      <View className="mb-4 rounded-2xl bg-white p-4 dark:bg-zinc-800">
-        <Text className="mb-2 font-semibold text-zinc-700 dark:text-zinc-200">
-          {isEditing ? 'Edit item' : 'New item'}
-        </Text>
-
+      <UICard
+        title={isEditing ? 'Editar item' : 'Novo item'}
+        className="mb-4"
+        titleClassName="text-base font-semibold text-zinc-700 dark:text-zinc-200"
+      >
         <View className="gap-2">
           <Controller
             control={control}
             name="title"
             render={({ field: { onChange, value } }) => (
-              <>
-                <TextInput
-                  value={value}
-                  onChangeText={text => {
-                    actions.clearError();
-                    onChange(text);
-                  }}
-                  placeholder="Item title"
-                  placeholderTextColor="#71717a"
-                  className="rounded-xl border border-zinc-300 px-4 py-3 text-zinc-900 dark:border-zinc-700 dark:text-zinc-100"
-                />
-                {errors.title?.message ? (
-                  <Text className="text-sm text-red-600">{errors.title.message}</Text>
-                ) : null}
-              </>
+              <UIInput
+                value={value}
+                onChangeText={text => {
+                  actions.clearError();
+                  onChange(text);
+                }}
+                placeholder="Nome do item"
+                errorMessage={errors.title?.message}
+              />
             )}
           />
 
@@ -66,67 +60,58 @@ export const ListDetailsView = () => {
               control={control}
               name="quantity"
               render={({ field: { onChange, value } }) => (
-                <>
-                  <TextInput
-                    value={value ?? ''}
-                    onChangeText={text => {
-                      actions.clearError();
-                      onChange(text);
-                    }}
-                    placeholder="Qty"
-                    placeholderTextColor="#71717a"
-                    keyboardType="decimal-pad"
-                    className="flex-1 rounded-xl border border-zinc-300 px-4 py-3 text-zinc-900 dark:border-zinc-700 dark:text-zinc-100"
-                  />
-                </>
-              )}
-            />
-            <Controller
-              control={control}
-              name="unit"
-              render={({ field: { onChange, value } }) => (
-                <TextInput
+                <UIInput
                   value={value ?? ''}
                   onChangeText={text => {
                     actions.clearError();
                     onChange(text);
                   }}
-                  placeholder="Unit"
-                  placeholderTextColor="#71717a"
-                  className="flex-1 rounded-xl border border-zinc-300 px-4 py-3 text-zinc-900 dark:border-zinc-700 dark:text-zinc-100"
+                  placeholder="Qtd."
+                  keyboardType="decimal-pad"
+                  errorMessage={errors.quantity?.message}
+                  containerClassName="flex-1"
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="unit"
+              render={({ field: { onChange, value } }) => (
+                <UIInput
+                  value={value ?? ''}
+                  onChangeText={text => {
+                    actions.clearError();
+                    onChange(text);
+                  }}
+                  placeholder="Un."
+                  containerClassName="flex-1"
                 />
               )}
             />
           </View>
-
-          {errors.quantity?.message ? (
-            <Text className="text-sm text-red-600">{errors.quantity.message}</Text>
-          ) : null}
         </View>
 
-        {state.error ? <Text className="mt-3 text-sm text-red-600">{state.error}</Text> : null}
+        <UIMessage tone="error" message={state.error} className="mt-3" />
 
-        <Pressable
+        <UIButton
           disabled={state.isBusy}
+          loading={state.isBusy}
+          loadingLabel="Salvando..."
+          label={isEditing ? 'Salvar alterações' : 'Adicionar item'}
           onPress={handleSubmit(actions.submitItem)}
-          className="mt-3 rounded-xl bg-zinc-900 px-4 py-3 dark:bg-zinc-100"
-        >
-          <Text className="text-center font-semibold text-zinc-100 dark:text-zinc-900">
-            {state.isBusy ? 'Saving...' : isEditing ? 'Save changes' : 'Add item'}
-          </Text>
-        </Pressable>
+          containerClassName="mt-3"
+        />
 
         {isEditing ? (
-          <Pressable
+          <UIButton
+            label="Cancelar edição"
+            variant="secondary"
             onPress={actions.cancelEdit}
-            className="mt-2 rounded-xl bg-zinc-200 px-4 py-3 dark:bg-zinc-700"
-          >
-            <Text className="text-center font-medium text-zinc-800 dark:text-zinc-100">
-              Cancel edit
-            </Text>
-          </Pressable>
+            containerClassName="mt-2"
+          />
         ) : null}
-      </View>
+      </UICard>
 
       <FlatList
         data={state.items}
@@ -135,7 +120,7 @@ export const ListDetailsView = () => {
         refreshing={state.isLoading}
         onRefresh={actions.loadData}
         renderItem={({ item }) => (
-          <View className="rounded-2xl bg-white p-4 dark:bg-zinc-800">
+          <UICard>
             <Text
               className={`text-lg font-semibold ${
                 item.isPurchased ? 'text-zinc-400 line-through' : 'text-zinc-900 dark:text-zinc-100'
@@ -149,40 +134,34 @@ export const ListDetailsView = () => {
             </Text>
 
             <View className="mt-3 flex-row gap-2">
-              <Pressable
+              <UIButton
+                label={item.isPurchased ? 'Desmarcar' : 'Marcar como comprado'}
+                variant={item.isPurchased ? 'warning' : 'success'}
+                size="sm"
                 onPress={() => actions.togglePurchased(item)}
-                className={`flex-1 rounded-lg px-3 py-2 ${
-                  item.isPurchased
-                    ? 'bg-amber-200 dark:bg-amber-700'
-                    : 'bg-emerald-200 dark:bg-emerald-700'
-                }`}
-              >
-                <Text className="text-center font-medium text-zinc-900 dark:text-zinc-100">
-                  {item.isPurchased ? 'Unmark' : 'Mark purchased'}
-                </Text>
-              </Pressable>
+                containerClassName="flex-1"
+              />
 
-              <Pressable
+              <UIButton
+                label="Editar"
+                variant="secondary"
+                size="sm"
                 onPress={() => actions.startEdit(item)}
-                className="flex-1 rounded-lg bg-zinc-200 px-3 py-2 dark:bg-zinc-700"
-              >
-                <Text className="text-center font-medium text-zinc-900 dark:text-zinc-100">
-                  Edit
-                </Text>
-              </Pressable>
+                containerClassName="flex-1"
+              />
 
-              <Pressable
+              <UIButton
+                label="Excluir"
+                variant="dangerSoft"
+                size="sm"
                 onPress={() => actions.deleteItem(item.id)}
-                className="flex-1 rounded-lg bg-red-100 px-3 py-2 dark:bg-red-900/40"
-              >
-                <Text className="text-center font-medium text-red-700 dark:text-red-300">
-                  Delete
-                </Text>
-              </Pressable>
+                containerClassName="flex-1"
+              />
             </View>
-          </View>
+          </UICard>
         )}
       />
-    </View>
+    </UIScreen>
   );
 };
+

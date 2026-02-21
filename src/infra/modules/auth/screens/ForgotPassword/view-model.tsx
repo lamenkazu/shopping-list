@@ -37,7 +37,7 @@ export const useForgotPasswordViewModel = () => {
 
       setState({
         error: null,
-        success: 'Email sent. Check your inbox for password reset instructions.',
+        success: 'E-mail enviado. Verifique sua caixa de entrada para redefinir a senha.',
       });
     },
     [resetPassword]
@@ -57,3 +57,4 @@ export const useForgotPasswordViewModel = () => {
     actions,
   };
 };
+

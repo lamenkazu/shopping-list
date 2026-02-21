@@ -2,7 +2,7 @@ import type { ResetPasswordDTO } from '@core/dto/auth.dto';
 import { z } from 'zod';
 
 export const forgotPasswordSchema = z.object({
-  email: z.email('Enter a valid email.'),
+  email: z.email('Informe um e-mail válido.'),
 });
 
 export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
@@ -16,3 +16,4 @@ export const toDTO = (data: ForgotPasswordFormData): ResetPasswordDTO => {
     email: data.email.trim(),
   };
 };
+

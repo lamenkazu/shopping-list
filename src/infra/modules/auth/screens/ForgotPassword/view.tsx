@@ -1,7 +1,11 @@
+import { UIButton } from '@infra/shared/ui/button';
+import { UIInput } from '@infra/shared/ui/input';
+import { UIMessage } from '@infra/shared/ui/message';
+import { UISection } from '@infra/shared/ui/section';
+import { UITextLinkButton } from '@infra/shared/ui/text-link-button';
 import { Link } from 'expo-router';
 import { Controller } from 'react-hook-form';
-import { Pressable, Text, TextInput, View } from 'react-native';
-
+import { View } from 'react-native';
 import { useForgotPasswordViewModel } from './view-model';
 
 export const ForgotPasswordView = () => {
@@ -13,64 +17,45 @@ export const ForgotPasswordView = () => {
   } = form;
 
   return (
-    <View className="flex-1 justify-center bg-zinc-100 px-6 dark:bg-zinc-900">
-      <View className="rounded-3xl bg-white p-6 dark:bg-zinc-800">
-        <Text className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">Forgot password</Text>
-        <Text className="mt-2 text-zinc-600 dark:text-zinc-300">
-          We will send a reset link by email.
-        </Text>
-
-        <View className="mt-6 gap-3">
-          <Controller
-            control={control}
-            name="email"
-            render={({ field: { onChange, value } }) => (
-              <>
-                <TextInput
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  placeholder="you@email.com"
-                  placeholderTextColor="#71717a"
-                  value={value}
-                  onChangeText={text => {
-                    actions.resetMessages();
-                    onChange(text);
-                  }}
-                  className="rounded-xl border border-zinc-300 px-4 py-3 text-zinc-900 dark:border-zinc-700 dark:text-zinc-100"
-                />
-                {errors.email?.message ? (
-                  <Text className="text-sm text-red-600">{errors.email.message}</Text>
-                ) : null}
-              </>
-            )}
-          />
-        </View>
-
-        {state.error ? <Text className="mt-3 text-sm text-red-600">{state.error}</Text> : null}
-        {state.success ? (
-          <Text className="mt-3 text-sm text-emerald-700">{state.success}</Text>
-        ) : null}
-
-        <Pressable
-          disabled={isSubmitting}
-          onPress={handleSubmit(actions.submit)}
-          className="mt-6 rounded-xl bg-zinc-900 px-4 py-3 dark:bg-zinc-100"
-        >
-          <Text className="text-center font-semibold text-zinc-100 dark:text-zinc-900">
-            {isSubmitting ? 'Sending...' : 'Send reset email'}
-          </Text>
-        </Pressable>
-
-        <View className="mt-5">
-          <Link href={'/sign-in' as never} asChild>
-            <Pressable>
-              <Text className="text-center font-medium text-zinc-700 underline dark:text-zinc-200">
-                Back to sign in
-              </Text>
-            </Pressable>
-          </Link>
-        </View>
+    <UISection title="Esqueci minha senha" subtitle="Enviaremos um link de redefinição por e-mail.">
+      <View className="gap-3">
+        <Controller
+          control={control}
+          name="email"
+          render={({ field: { onChange, value } }) => (
+            <UIInput
+              autoCapitalize="none"
+              keyboardType="email-address"
+              placeholder="seu@email.com"
+              value={value}
+              onChangeText={text => {
+                actions.resetMessages();
+                onChange(text);
+              }}
+              errorMessage={errors.email?.message}
+            />
+          )}
+        />
       </View>
-    </View>
+
+      <UIMessage tone="error" message={state.error} className="mt-3" />
+      <UIMessage tone="success" message={state.success} className="mt-3" />
+
+      <UIButton
+        disabled={isSubmitting}
+        loading={isSubmitting}
+        loadingLabel="Enviando..."
+        label="Enviar e-mail de redefinição"
+        onPress={handleSubmit(actions.submit)}
+        containerClassName="mt-6"
+      />
+
+      <View className="mt-5">
+        <Link href={'/sign-in' as never} asChild>
+          <UITextLinkButton label="Voltar para entrar" align="center" />
+        </Link>
+      </View>
+    </UISection>
   );
 };
+

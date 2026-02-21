@@ -2,7 +2,7 @@ import type { CreateShoppingItemDTO } from '@core/dto/item.dto';
 import { z } from 'zod';
 
 export const itemSchema = z.object({
-  title: z.string().trim().min(1, 'Item title is required.'),
+  title: z.string().trim().min(1, 'O nome do item é obrigatório.'),
   quantity: z
     .string()
     .trim()
@@ -14,7 +14,7 @@ export const itemSchema = z.object({
 
       const normalized = value.replace(',', '.');
       return !Number.isNaN(Number(normalized));
-    }, 'Quantity must be a valid number.'),
+    }, 'A quantidade deve ser um número válido.'),
   unit: z.string().trim().optional(),
 });
 
@@ -41,3 +41,4 @@ export const toCreateDTO = (
     userId,
   };
 };
+

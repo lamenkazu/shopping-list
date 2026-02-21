@@ -114,7 +114,7 @@ export const useListDetailsViewModel = () => {
   const submitItem = useCallback(
     async (data: ItemFormData) => {
       if (!user?.id) {
-        setState(prev => ({ ...prev, error: 'You are not signed in.' }));
+        setState(prev => ({ ...prev, error: 'Você não está autenticado.' }));
         return;
       }
 
@@ -165,7 +165,7 @@ export const useListDetailsViewModel = () => {
   const togglePurchased = useCallback(
     async (item: ShoppingItemDTO) => {
       if (!user?.id) {
-        setState(prev => ({ ...prev, error: 'You are not signed in.' }));
+        setState(prev => ({ ...prev, error: 'Você não está autenticado.' }));
         return;
       }
 
@@ -223,3 +223,4 @@ export const useListDetailsViewModel = () => {
     isEditing: Boolean(state.editingItemId),
   };
 };
+

@@ -1,7 +1,11 @@
+import { UIButton } from '@infra/shared/ui/button';
+import { UICard } from '@infra/shared/ui/card';
+import { UIInput } from '@infra/shared/ui/input';
+import { UIMessage } from '@infra/shared/ui/message';
+import { UIScreen } from '@infra/shared/ui/screen';
 import { useRouter } from 'expo-router';
 import { Controller } from 'react-hook-form';
-import { Alert, FlatList, Pressable, Text, TextInput, View } from 'react-native';
-
+import { Alert, FlatList, Pressable, Text, View } from 'react-native';
 import { useListsHomeViewModel } from './view-model';
 
 export const ListsHomeView = () => {
@@ -15,10 +19,10 @@ export const ListsHomeView = () => {
   } = form;
 
   const onDeleteList = (listId: string) => {
-    Alert.alert('Delete list', 'This action cannot be undone.', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert('Excluir lista', 'Esta ação não pode ser desfeita.', [
+      { text: 'Cancelar', style: 'cancel' },
       {
-        text: 'Delete',
+        text: 'Excluir',
         style: 'destructive',
         onPress: async () => {
           await actions.deleteList(listId);
@@ -28,58 +32,51 @@ export const ListsHomeView = () => {
   };
 
   return (
-    <View className="flex-1 bg-zinc-100 px-4 py-5 dark:bg-zinc-900">
+    <UIScreen>
       <View className="mb-4 flex-row items-center justify-between">
-        <Text className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Shopping lists</Text>
-        <Pressable
+        <Text className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Listas de compras</Text>
+
+        <UIButton
+          label="Perfil"
+          size="sm"
+          variant="secondary"
           onPress={() => router.push('/profile' as never)}
-          className="rounded-lg bg-zinc-200 px-3 py-2 dark:bg-zinc-700"
-        >
-          <Text className="font-medium text-zinc-900 dark:text-zinc-100">Profile</Text>
-        </Pressable>
+        />
       </View>
 
-      <View className="mb-5 rounded-2xl bg-white p-4 dark:bg-zinc-800">
-        <Text className="mb-2 font-medium text-zinc-700 dark:text-zinc-200">Create a list</Text>
+      <UICard title="Criar uma lista" className="mb-5" titleClassName="text-base font-medium">
         <Controller
           control={control}
           name="name"
           render={({ field: { onChange, value } }) => (
-            <>
-              <TextInput
-                value={value}
-                onChangeText={text => {
-                  actions.clearError();
-                  onChange(text);
-                }}
-                placeholder="Example: Family groceries"
-                placeholderTextColor="#71717a"
-                className="rounded-xl border border-zinc-300 px-4 py-3 text-zinc-900 dark:border-zinc-700 dark:text-zinc-100"
-              />
-              {errors.name?.message ? (
-                <Text className="mt-2 text-sm text-red-600">{errors.name.message}</Text>
-              ) : null}
-            </>
+            <UIInput
+              value={value}
+              onChangeText={text => {
+                actions.clearError();
+                onChange(text);
+              }}
+              placeholder="Exemplo: Compras da família"
+              errorMessage={errors.name?.message}
+            />
           )}
         />
 
-        <Pressable
+        <UIButton
           disabled={state.isCreating}
+          loading={state.isCreating}
+          loadingLabel="Criando..."
+          label="Criar lista"
           onPress={handleSubmit(actions.submit)}
-          className="mt-3 rounded-xl bg-zinc-900 px-4 py-3 dark:bg-zinc-100"
-        >
-          <Text className="text-center font-semibold text-zinc-100 dark:text-zinc-900">
-            {state.isCreating ? 'Creating...' : 'Create list'}
-          </Text>
-        </Pressable>
+          containerClassName="mt-3"
+        />
 
-        {state.error ? <Text className="mt-2 text-sm text-red-600">{state.error}</Text> : null}
-      </View>
+        <UIMessage tone="error" message={state.error} className="mt-2" />
+      </UICard>
 
       {!state.lists.length && !state.isLoading ? (
-        <View className="rounded-2xl bg-white p-6 dark:bg-zinc-800">
-          <Text className="text-center text-zinc-600 dark:text-zinc-300">No lists yet.</Text>
-        </View>
+        <UICard className="p-6">
+          <Text className="text-center text-zinc-600 dark:text-zinc-300">Ainda não há listas.</Text>
+        </UICard>
       ) : null}
 
       <FlatList
@@ -89,7 +86,7 @@ export const ListsHomeView = () => {
         onRefresh={actions.loadLists}
         contentContainerClassName="gap-3 pb-8"
         renderItem={({ item }) => (
-          <View className="rounded-2xl bg-white p-4 dark:bg-zinc-800">
+          <UICard>
             <Pressable
               onPress={() =>
                 router.push({ pathname: '/lists/[listId]', params: { listId: item.id } } as never)
@@ -99,21 +96,21 @@ export const ListsHomeView = () => {
                 {item.name}
               </Text>
               <Text className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                Created at {new Date(item.createdAt).toLocaleString()}
+                Criada em {new Date(item.createdAt).toLocaleString()}
               </Text>
             </Pressable>
 
-            <Pressable
+            <UIButton
+              label="Excluir lista"
+              variant="dangerSoft"
+              size="sm"
               onPress={() => onDeleteList(item.id)}
-              className="mt-3 rounded-lg bg-red-100 px-3 py-2 dark:bg-red-900/40"
-            >
-              <Text className="text-center font-medium text-red-700 dark:text-red-300">
-                Delete list
-              </Text>
-            </Pressable>
-          </View>
+              containerClassName="mt-3"
+            />
+          </UICard>
         )}
       />
-    </View>
+    </UIScreen>
   );
 };
+

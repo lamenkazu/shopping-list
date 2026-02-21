@@ -23,7 +23,7 @@ export const useAcceptInviteViewModel = () => {
 
   const acceptInvite = useCallback(async () => {
     if (!token) {
-      setState(prev => ({ ...prev, error: 'This invite link is invalid.' }));
+      setState(prev => ({ ...prev, error: 'Este link de convite é inválido.' }));
       return;
     }
 
@@ -52,3 +52,4 @@ export const useAcceptInviteViewModel = () => {
     actions,
   };
 };
+

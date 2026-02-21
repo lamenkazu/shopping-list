@@ -56,7 +56,7 @@ export const useListsHomeViewModel = () => {
   const submit = useCallback(
     async (data: CreateListFormData) => {
       if (!user?.id) {
-        setState(prev => ({ ...prev, error: 'You are not signed in.' }));
+        setState(prev => ({ ...prev, error: 'Você não está autenticado.' }));
         return;
       }
 
@@ -66,7 +66,7 @@ export const useListsHomeViewModel = () => {
         const session = await authRepository.refreshSession();
 
         if (!session?.user?.id) {
-          throw new Error('Session expired. Please sign in again.');
+          throw new Error('Sua sessão expirou. Faça login novamente.');
         }
 
         await listsRepository.createList(toDTO(data));
@@ -109,3 +109,4 @@ export const useListsHomeViewModel = () => {
     actions,
   };
 };
+

@@ -5,25 +5,11 @@
     "strict": true,
     "module": "ESNext",
     "paths": {
-      "@/*": [
-        "./*"
-      ],
-      "@app/*": [
-        "./app/*"
-      ],
-      "@core/*": [
-        "./src/core/*"
-      ],
-      "@infra/*": [
-        "./src/infra/*"
-      ]
+      "@/*": ["./*"],
+      "@app/*": ["./app/*"],
+      "@core/*": ["./src/core/*"],
+      "@infra/*": ["./src/infra/*"]
     }
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    ".expo/types/**/*.ts",
-    "expo-env.d.ts",
-    "nativewind-env.d.ts"
-  ]
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts", "nativewind-env.d.ts"]
 }
