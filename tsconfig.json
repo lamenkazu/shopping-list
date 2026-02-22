@@ -11,5 +11,12 @@
       "@infra/*": ["./src/infra/*"]
     }
   },
-  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "@types/**/*.d.ts"]
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "@types/**/*.d.ts",
+    "nativewind-env.d.ts",
+    "expo-env.d.ts"
+  ]
 }
