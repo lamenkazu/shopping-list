@@ -28,6 +28,7 @@ create table if not exists public.shopping_items (
   title text not null,
   quantity numeric(10,2),
   unit text,
+  price_cents integer check (price_cents is null or price_cents >= 0),
   is_purchased boolean not null default false,
   purchased_at timestamptz,
   purchased_by uuid references auth.users(id),
@@ -51,6 +52,20 @@ create table if not exists public.list_invites (
 create index if not exists idx_items_list_created_at on public.shopping_items(list_id, created_at desc);
 create index if not exists idx_members_user_id on public.list_members(user_id);
 create index if not exists idx_list_invites_token_hash on public.list_invites(token_hash);
+
+create view public.shopping_lists_with_totals
+with (security_invoker = true)
+as
+select
+  l.id,
+  l.name,
+  l.created_by,
+  l.created_at,
+  l.updated_at,
+  coalesce(sum(i.price_cents), 0)::bigint as total_price_cents
+from public.shopping_lists l
+left join public.shopping_items i on i.list_id = l.id
+group by l.id, l.name, l.created_by, l.created_at, l.updated_at;
 
 create or replace function public.set_updated_at()
 returns trigger
@@ -372,5 +387,10 @@ grant select, insert, update, delete on table public.shopping_lists to authentic
 grant select, insert, update, delete on table public.list_members to authenticated;
 grant select, insert, update, delete on table public.shopping_items to authenticated;
 grant select, insert, update, delete on table public.list_invites to authenticated;
+grant select on public.shopping_lists_with_totals to authenticated;
 
 select pg_notify('pgrst', 'reload schema');
+
+
+
+

@@ -139,6 +139,7 @@ export const useListDetailsViewModel = () => {
             title: payload.title,
             quantity: payload.quantity,
             unit: payload.unit,
+            priceCents: payload.priceCents,
             userId: payload.userId,
           });
         } else {
@@ -163,6 +164,7 @@ export const useListDetailsViewModel = () => {
       form.setValue('title', item.title);
       form.setValue('quantity', item.quantity !== null ? String(item.quantity) : '');
       form.setValue('unit', item.unit ?? '');
+      form.setValue('price', item.priceCents !== null ? (item.priceCents / 100).toFixed(2).replace('.', ',') : '');
     },
     [form]
   );
@@ -205,6 +207,10 @@ export const useListDetailsViewModel = () => {
     }
   }, [listId]);
 
+  const totalPriceCents = useMemo(() => {
+    return state.items.reduce((acc, item) => acc + (item.priceCents ?? 0), 0);
+  }, [state.items]);
+
   const actions = useMemo(
     () => ({
       loadData,
@@ -225,6 +231,7 @@ export const useListDetailsViewModel = () => {
     form,
     state,
     actions,
+    totalPriceCents,
     isEditing: Boolean(state.editingItemId),
   };
 };

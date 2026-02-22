@@ -1,3 +1,4 @@
+import { formatCurrencyBRL } from '@infra/shared/utils';
 import { useAppColors } from '@infra/shared/theme/use-app-colors';
 import { UIButton } from '@infra/shared/ui/button';
 import { UICard } from '@infra/shared/ui/card';
@@ -102,6 +103,10 @@ export const ListsHomeView = () => {
               >
                 <Text style={{ color: colors.text }} className="text-lg font-semibold">
                   {item.name}
+                </Text>
+
+                <Text style={{ color: colors.success }} className="mt-1 text-sm font-semibold">
+                  Total: {formatCurrencyBRL(item.totalPriceCents)}
                 </Text>
 
                 <Text style={{ color: colors.textMuted }} className="mt-1 text-xs">

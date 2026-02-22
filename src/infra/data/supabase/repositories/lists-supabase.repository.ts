@@ -9,15 +9,16 @@ import { supabase } from '@infra/data/supabase/client';
 import type { Database } from '@infra/data/supabase/database.types';
 import { toAppError } from '@infra/data/supabase/error/to-app-error';
 
-type ShoppingListRow = Database['public']['Tables']['shopping_lists']['Row'];
+type ShoppingListWithTotalsRow = Database['public']['Views']['shopping_lists_with_totals']['Row'];
 
-const mapShoppingList = (row: ShoppingListRow): ShoppingListDTO => {
+const mapShoppingList = (row: ShoppingListWithTotalsRow): ShoppingListDTO => {
   return {
     id: row.id,
     name: row.name,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     createdBy: row.created_by,
+    totalPriceCents: Number(row.total_price_cents ?? 0),
   };
 };
 
@@ -25,7 +26,7 @@ export class ListsSupabaseRepository implements ListsRepository {
   async fetchLists(): Promise<ShoppingListDTO[]> {
     try {
       const { data, error } = await supabase
-        .from('shopping_lists')
+        .from('shopping_lists_with_totals')
         .select('*')
         .order('updated_at', { ascending: false });
 
@@ -42,7 +43,7 @@ export class ListsSupabaseRepository implements ListsRepository {
   async fetchListById(listId: string): Promise<ShoppingListDTO> {
     try {
       const { data, error } = await supabase
-        .from('shopping_lists')
+        .from('shopping_lists_with_totals')
         .select('*')
         .eq('id', listId)
         .single();

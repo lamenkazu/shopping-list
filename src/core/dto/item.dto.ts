@@ -4,6 +4,7 @@ export type ShoppingItemDTO = {
   title: string;
   quantity: number | null;
   unit: string | null;
+  priceCents: number | null;
   isPurchased: boolean;
   purchasedAt: string | null;
   purchasedBy: string | null;
@@ -18,6 +19,7 @@ export type CreateShoppingItemDTO = {
   title: string;
   quantity: number | null;
   unit: string | null;
+  priceCents: number | null;
   userId: string;
 };
 
@@ -26,6 +28,7 @@ export type UpdateShoppingItemDTO = {
   title: string;
   quantity: number | null;
   unit: string | null;
+  priceCents: number | null;
   userId: string;
 };
 

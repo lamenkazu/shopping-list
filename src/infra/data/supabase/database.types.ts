@@ -115,6 +115,7 @@ export type Database = {
           purchased_at: string | null;
           purchased_by: string | null;
           quantity: number | null;
+          price_cents: number | null;
           title: string;
           unit: string | null;
           updated_at: string;
@@ -129,6 +130,7 @@ export type Database = {
           purchased_at?: string | null;
           purchased_by?: string | null;
           quantity?: number | null;
+          price_cents?: number | null;
           title: string;
           unit?: string | null;
           updated_at?: string;
@@ -143,6 +145,7 @@ export type Database = {
           purchased_at?: string | null;
           purchased_by?: string | null;
           quantity?: number | null;
+          price_cents?: number | null;
           title?: string;
           unit?: string | null;
           updated_at?: string;
@@ -213,7 +216,25 @@ export type Database = {
       };
     };
     Views: {
-      [_ in never]: never;
+      shopping_lists_with_totals: {
+        Row: {
+          created_at: string;
+          created_by: string;
+          id: string;
+          name: string;
+          total_price_cents: number;
+          updated_at: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'shopping_lists_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
     };
     Functions: {
       accept_invite: {
@@ -236,3 +257,4 @@ export type Database = {
     };
   };
 };
+

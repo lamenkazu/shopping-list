@@ -4,6 +4,7 @@ export type ShoppingListDTO = {
   createdAt: string;
   updatedAt: string;
   createdBy: string;
+  totalPriceCents: number;
 };
 
 export type CreateShoppingListDTO = {

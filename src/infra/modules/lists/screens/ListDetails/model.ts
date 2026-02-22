@@ -1,4 +1,5 @@
 import type { CreateShoppingItemDTO } from '@core/dto/item.dto';
+import { parseCurrencyToCents } from '@infra/shared/utils';
 import { z } from 'zod';
 
 export const itemSchema = z.object({
@@ -16,6 +17,17 @@ export const itemSchema = z.object({
       return !Number.isNaN(Number(normalized));
     }, 'A quantidade deve ser um número válido.'),
   unit: z.string().trim().optional(),
+  price: z
+    .string()
+    .trim()
+    .optional()
+    .refine(value => {
+      if (!value) {
+        return true;
+      }
+
+      return parseCurrencyToCents(value) !== null;
+    }, 'O preço deve ser um valor monetário válido.'),
 });
 
 export type ItemFormData = z.infer<typeof itemSchema>;
@@ -24,6 +36,7 @@ export const defaultValues: ItemFormData = {
   title: '',
   quantity: '',
   unit: '',
+  price: '',
 };
 
 export const toCreateDTO = (
@@ -38,7 +51,7 @@ export const toCreateDTO = (
     title: data.title.trim(),
     quantity: normalizedQuantity,
     unit: data.unit?.trim() ? data.unit.trim() : null,
+    priceCents: data.price?.trim() ? parseCurrencyToCents(data.price) : null,
     userId,
   };
 };
-

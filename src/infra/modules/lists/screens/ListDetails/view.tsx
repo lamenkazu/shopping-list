@@ -1,3 +1,4 @@
+import { formatCurrencyBRL } from '@infra/shared/utils';
 import { useAppColors } from '@infra/shared/theme/use-app-colors';
 import { UIButton } from '@infra/shared/ui/button';
 import { UICard } from '@infra/shared/ui/card';
@@ -21,7 +22,7 @@ export const ListDetailsView = () => {
   const colors = useAppColors();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const { form, state, actions, isEditing } = useListDetailsViewModel();
+  const { form, state, actions, isEditing, totalPriceCents } = useListDetailsViewModel();
 
   const {
     control,
@@ -62,6 +63,7 @@ export const ListDetailsView = () => {
     <UIScreen>
       <UIHeader
         title={state.list?.name ?? 'Lista'}
+        subtitle={`Total da lista: ${formatCurrencyBRL(totalPriceCents)}`}
         onBack={() => router.back()}
         backIconNode={lucideIconNodes.chevronLeft}
         rightSlot={(
@@ -127,9 +129,17 @@ export const ListDetailsView = () => {
               </View>
 
               <View className="flex-row items-center justify-between gap-2">
-                <Text style={{ color: colors.textMuted }} className="text-sm">
-                  {item.quantity ?? '-'} {item.unit ?? ''}
-                </Text>
+                <View className="gap-1">
+                  <Text style={{ color: colors.textMuted }} className="text-sm">
+                    {item.quantity ?? '-'} {item.unit ?? ''}
+                  </Text>
+
+                  {item.priceCents !== null ? (
+                    <Text style={{ color: colors.success }} className="text-sm font-semibold">
+                      {formatCurrencyBRL(item.priceCents)}
+                    </Text>
+                  ) : null}
+                </View>
 
                 <View className="flex-row items-center gap-2">
                   <UIIconButton
@@ -211,6 +221,23 @@ export const ListDetailsView = () => {
               )}
             />
           </View>
+
+          <Controller
+            control={control}
+            name="price"
+            render={({ field: { onChange, value } }) => (
+              <UIInput
+                value={value ?? ''}
+                onChangeText={text => {
+                  actions.clearError();
+                  onChange(text);
+                }}
+                placeholder="Preço (R$)"
+                keyboardType="decimal-pad"
+                errorMessage={errors.price?.message}
+              />
+            )}
+          />
         </View>
 
         <UIMessage tone="error" message={state.error} className="mt-3" />

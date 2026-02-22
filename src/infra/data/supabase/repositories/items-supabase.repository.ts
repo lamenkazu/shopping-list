@@ -21,6 +21,7 @@ const mapShoppingItem = (row: ShoppingItemRow): ShoppingItemDTO => {
     title: row.title,
     quantity: row.quantity,
     unit: row.unit,
+    priceCents: row.price_cents,
     isPurchased: row.is_purchased,
     purchasedAt: row.purchased_at,
     purchasedBy: row.purchased_by,
@@ -80,6 +81,7 @@ export class ItemsSupabaseRepository implements ItemsRepository {
         title: data.title.trim(),
         quantity: data.quantity,
         unit: data.unit,
+        price_cents: data.priceCents,
         created_by: data.userId,
         updated_by: data.userId,
       });
@@ -100,6 +102,7 @@ export class ItemsSupabaseRepository implements ItemsRepository {
           title: data.title.trim(),
           quantity: data.quantity,
           unit: data.unit,
+          price_cents: data.priceCents,
           updated_by: data.userId,
           updated_at: new Date().toISOString(),
         })
