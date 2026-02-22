@@ -13,5 +13,7 @@ export interface AuthRepository {
   signIn(credentials: SignInDTO): Promise<void>;
   signUp(data: SignUpDTO): Promise<SignUpResultDTO>;
   resetPassword(data: ResetPasswordDTO): Promise<void>;
+  handleAuthCallback(url: string): Promise<void>;
+  updatePassword(password: string): Promise<void>;
   signOut(): Promise<void>;
 }

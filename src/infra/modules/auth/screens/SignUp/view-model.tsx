@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '@infra/app/providers/auth-provider';
+import { useToast } from '@infra/app/providers/toast-provider';
 import { useRouter } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -12,6 +13,7 @@ type ViewModelState = {
 export const useSignUpViewModel = () => {
   const router = useRouter();
   const { signUp } = useAuth();
+  const { showToast } = useToast();
 
   const [state, setState] = useState<ViewModelState>({
     error: null,
@@ -36,13 +38,14 @@ export const useSignUpViewModel = () => {
       }
 
       if (result.needsEmailConfirmation) {
+        showToast('Conta criada. Verifique seu e-mail para confirmar o cadastro.', 'success');
         router.replace('/sign-in' as never);
         return;
       }
 
       router.replace('/' as never);
     },
-    [router, signUp]
+    [router, showToast, signUp]
   );
 
   const actions = useMemo(

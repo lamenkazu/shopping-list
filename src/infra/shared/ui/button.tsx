@@ -5,6 +5,7 @@ import { Pressable, Text } from 'react-native';
 export type UIButtonVariant =
   | 'primary'
   | 'secondary'
+  | 'ghost'
   | 'danger'
   | 'dangerSoft'
   | 'info'
@@ -60,6 +61,11 @@ export const UIButton = ({
       borderColor: colors.border,
       borderWidth: 1,
     },
+    ghost: {
+      backgroundColor: 'transparent',
+      borderColor: colors.border,
+      borderWidth: 1,
+    },
     danger: {
       backgroundColor: colors.danger,
     },
@@ -82,6 +88,7 @@ export const UIButton = ({
   const labelVariantStyleMap: Record<UIButtonVariant, StyleProp<TextStyle>> = {
     primary: { color: colors.primaryContrast },
     secondary: { color: colors.text },
+    ghost: { color: colors.textMuted },
     danger: { color: colors.textInverse },
     dangerSoft: { color: colors.dangerContrast },
     info: { color: colors.textInverse },

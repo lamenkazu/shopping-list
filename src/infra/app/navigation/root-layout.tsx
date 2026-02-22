@@ -1,5 +1,6 @@
 import { AuthProvider, useAuth } from '@infra/app/providers/auth-provider';
 import { AppThemeProvider } from '@infra/app/providers/theme-provider';
+import { ToastProvider } from '@infra/app/providers/toast-provider';
 import { useColorScheme } from '@infra/shared/hooks/use-color-scheme';
 import { Colors } from '@infra/shared/theme/theme';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
@@ -24,6 +25,7 @@ const AppNavigator = () => {
 
     const firstSegment = String(segments[0] ?? '');
     const inPublicGroup = firstSegment === '(public)';
+    const inRecoveryRoute = pathname === '/recovery';
 
     if (!session && !inPublicGroup) {
       if (pathname && pathname !== '/') {
@@ -37,7 +39,7 @@ const AppNavigator = () => {
       return;
     }
 
-    if (session && inPublicGroup) {
+    if (session && inPublicGroup && !inRecoveryRoute) {
       router.replace('/' as never);
     }
   }, [isLoading, pathname, router, segments, session]);
@@ -91,9 +93,11 @@ const RootNavigatorContent = () => {
   return (
     <SafeAreaProvider>
       <ThemeProvider value={navigationTheme}>
-        <AuthProvider>
-          <AppNavigator />
-        </AuthProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <AppNavigator />
+          </AuthProvider>
+        </ToastProvider>
         <StatusBar
           style={colorScheme === 'dark' ? 'light' : 'dark'}
           backgroundColor={colors.background}

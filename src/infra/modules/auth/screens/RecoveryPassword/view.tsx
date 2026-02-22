@@ -5,18 +5,16 @@ import { UIInput } from '@infra/shared/ui/input';
 import { UILucideIcon } from '@infra/shared/ui/lucide-icon';
 import { UIMessage } from '@infra/shared/ui/message';
 import { UISection } from '@infra/shared/ui/section';
-import { UITextLinkButton } from '@infra/shared/ui/text-link-button';
-import { Link } from 'expo-router';
 import { useState } from 'react';
 import { Controller } from 'react-hook-form';
 import { View } from 'react-native';
-import { useSignUpViewModel } from './view-model';
+import { useRecoveryPasswordViewModel } from './view-model';
 
-export const SignUpView = () => {
+export const RecoveryPasswordView = () => {
   const colors = useAppColors();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
-  const { form, state, actions } = useSignUpViewModel();
+  const { form, state, actions } = useRecoveryPasswordViewModel();
 
   const {
     control,
@@ -25,52 +23,29 @@ export const SignUpView = () => {
   } = form;
 
   return (
-    <UISection title="Criar conta">
+    <UISection
+      title="Redefinir senha"
+      subtitle="Defina uma nova senha para voltar a acessar sua conta com segurança."
+    >
+      <UIMessage
+        tone="info"
+        message={state.isPreparingCallback ? 'Validando link de recuperação...' : null}
+        className="mb-3"
+      />
+
+      <UIMessage tone="error" message={state.callbackError} className="mb-3" />
+
       <View className="gap-3">
-        <Controller
-          control={control}
-          name="fullName"
-          render={({ field: { onChange, value } }) => (
-            <UIInput
-              placeholder="Nome completo"
-              value={value}
-              onChangeText={text => {
-                actions.resetError();
-                onChange(text);
-              }}
-              errorMessage={errors.fullName?.message}
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="email"
-          render={({ field: { onChange, value } }) => (
-            <UIInput
-              autoCapitalize="none"
-              keyboardType="email-address"
-              placeholder="seu@email.com"
-              value={value}
-              onChangeText={text => {
-                actions.resetError();
-                onChange(text);
-              }}
-              errorMessage={errors.email?.message}
-            />
-          )}
-        />
-
         <Controller
           control={control}
           name="password"
           render={({ field: { onChange, value } }) => (
             <UIInput
               secureTextEntry={!isPasswordVisible}
-              placeholder="Senha"
+              placeholder="Nova senha"
               value={value}
               onChangeText={text => {
-                actions.resetError();
+                actions.resetMessages();
                 onChange(text);
               }}
               rightAccessory={
@@ -95,10 +70,10 @@ export const SignUpView = () => {
           render={({ field: { onChange, value } }) => (
             <UIInput
               secureTextEntry={!isConfirmPasswordVisible}
-              placeholder="Confirmar senha"
+              placeholder="Confirmar nova senha"
               value={value}
               onChangeText={text => {
-                actions.resetError();
+                actions.resetMessages();
                 onChange(text);
               }}
               rightAccessory={
@@ -121,21 +96,25 @@ export const SignUpView = () => {
       </View>
 
       <UIMessage tone="error" message={state.error} className="mt-3" />
+      <UIMessage tone="success" message={state.success} className="mt-3" />
 
       <UIButton
-        disabled={isSubmitting}
+        disabled={isSubmitting || state.isPreparingCallback || Boolean(state.callbackError)}
         loading={isSubmitting}
-        loadingLabel="Criando conta..."
-        label="Criar conta"
+        loadingLabel="Salvando..."
+        label="Salvar nova senha"
         onPress={handleSubmit(actions.submit)}
         containerClassName="mt-6"
       />
 
-      <View className="mt-5">
-        <Link href={'/sign-in' as never} asChild>
-          <UITextLinkButton label="Já tenho uma conta" align="center" />
-        </Link>
-      </View>
+      {state.success ? (
+        <UIButton
+          variant="ghost"
+          label="Ir para entrar"
+          onPress={actions.goToSignIn}
+          containerClassName="mt-3"
+        />
+      ) : null}
     </UISection>
   );
 };

@@ -1,7 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '@infra/app/providers/auth-provider';
+import { useToast } from '@infra/app/providers/toast-provider';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { defaultValues, type SignInFormData, signInSchema, toDTO } from './model';
 
@@ -11,8 +12,10 @@ type ViewModelState = {
 
 export const useSignInViewModel = () => {
   const router = useRouter();
-  const params = useLocalSearchParams<{ redirect?: string }>();
+  const params = useLocalSearchParams<{ redirect?: string; confirmed?: string }>();
   const { signIn } = useAuth();
+  const { showToast } = useToast();
+  const hasShownConfirmationToastRef = useRef(false);
 
   const [state, setState] = useState<ViewModelState>({
     error: null,
@@ -23,6 +26,19 @@ export const useSignInViewModel = () => {
     defaultValues,
     mode: 'onChange',
   });
+
+  useEffect(() => {
+    if (hasShownConfirmationToastRef.current) {
+      return;
+    }
+
+    if (params.confirmed !== '1') {
+      return;
+    }
+
+    hasShownConfirmationToastRef.current = true;
+    showToast('E-mail confirmado com sucesso. Agora você já pode entrar.', 'success');
+  }, [params.confirmed, showToast]);
 
   const submit = useCallback(
     async (data: SignInFormData) => {

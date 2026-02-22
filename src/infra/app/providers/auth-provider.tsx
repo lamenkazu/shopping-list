@@ -15,10 +15,12 @@ type AuthContextValue = {
   isLoading: boolean;
   session: AuthSessionDTO | null;
   user: AuthUserDTO | null;
+  handleAuthCallback: (url: string) => Promise<AuthResult>;
   resetPassword: (email: string) => Promise<AuthResult>;
   signIn: (email: string, password: string) => Promise<AuthResult>;
   signOut: () => Promise<AuthResult>;
   signUp: (email: string, password: string, fullName?: string) => Promise<SignUpResult>;
+  updatePassword: (password: string) => Promise<AuthResult>;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -100,6 +102,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       resetPassword: async email => {
         try {
           await authRepository.resetPassword({ email });
+          return { error: null };
+        } catch (error) {
+          return { error: toUserMessage(error) };
+        }
+      },
+      handleAuthCallback: async url => {
+        try {
+          await authRepository.handleAuthCallback(url);
+          return { error: null };
+        } catch (error) {
+          return { error: toUserMessage(error) };
+        }
+      },
+      updatePassword: async password => {
+        try {
+          await authRepository.updatePassword(password);
           return { error: null };
         } catch (error) {
           return { error: toUserMessage(error) };
