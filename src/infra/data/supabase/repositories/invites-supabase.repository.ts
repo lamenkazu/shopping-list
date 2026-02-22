@@ -10,6 +10,17 @@ import { supabase } from '@infra/data/supabase/client';
 import { toAppError } from '@infra/data/supabase/error/to-app-error';
 import * as Linking from 'expo-linking';
 
+const buildInviteUrl = (token: string): string => {
+  const configuredBaseUrl = process.env.EXPO_PUBLIC_INVITE_BASE_URL?.trim();
+
+  if (!configuredBaseUrl) {
+    return Linking.createURL(`/invite/${token}`);
+  }
+
+  const sanitizedBaseUrl = configuredBaseUrl.replace(/\/+$/, '');
+  return `${sanitizedBaseUrl}/invite/${token}`;
+};
+
 export class InvitesSupabaseRepository implements InvitesRepository {
   async createInvite(data: CreateInviteDTO): Promise<CreatedInviteDTO> {
     try {
@@ -30,7 +41,7 @@ export class InvitesSupabaseRepository implements InvitesRepository {
       return {
         token: invite.token,
         expiresAt: invite.expires_at,
-        url: Linking.createURL(`/invite/${invite.token}`),
+        url: buildInviteUrl(invite.token),
       };
     } catch (error) {
       throw toAppError(error, ERROR_CODES.INVITES_UNKNOWN);

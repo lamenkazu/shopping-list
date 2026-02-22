@@ -1,4 +1,3 @@
-import { formatCurrencyBRL } from '@infra/shared/utils';
 import { useAppColors } from '@infra/shared/theme/use-app-colors';
 import { UIButton } from '@infra/shared/ui/button';
 import { UICard } from '@infra/shared/ui/card';
@@ -11,6 +10,7 @@ import { UIMenu } from '@infra/shared/ui/menu';
 import { UIMessage } from '@infra/shared/ui/message';
 import { UIModal } from '@infra/shared/ui/modal';
 import { UIScreen } from '@infra/shared/ui/screen';
+import { formatCurrencyBRL } from '@infra/shared/utils';
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Controller } from 'react-hook-form';
@@ -22,7 +22,7 @@ export const ListDetailsView = () => {
   const colors = useAppColors();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const { form, state, actions, isEditing, totalPriceCents } = useListDetailsViewModel();
+  const { form, state, actions, isEditing, priceSummary } = useListDetailsViewModel();
 
   const {
     control,
@@ -63,10 +63,9 @@ export const ListDetailsView = () => {
     <UIScreen>
       <UIHeader
         title={state.list?.name ?? 'Lista'}
-        subtitle={`Total da lista: ${formatCurrencyBRL(totalPriceCents)}`}
         onBack={() => router.back()}
         backIconNode={lucideIconNodes.chevronLeft}
-        rightSlot={(
+        rightSlot={
           <View className="flex-row items-center gap-2">
             <UIIconButton
               iconNode={lucideIconNodes.plus}
@@ -80,10 +79,51 @@ export const ListDetailsView = () => {
               accessibilityLabel="Abrir opções"
             />
           </View>
-        )}
+        }
       />
 
       <UIMessage tone="error" message={state.error} className="mb-3" />
+
+      <UICard
+        className="mb-3"
+        style={{
+          backgroundColor: colors.primarySoft,
+          borderColor: colors.primary,
+        }}
+      >
+        <View className="gap-1">
+          <Text style={{ color: colors.text }} className="text-sm font-semibold">
+            Resumo financeiro
+          </Text>
+
+          <View className="flex-row items-center justify-between">
+            <Text style={{ color: colors.textMuted }} className="text-sm">
+              Total
+            </Text>
+            <Text style={{ color: colors.text }} className="text-sm font-semibold">
+              {formatCurrencyBRL(priceSummary.totalPriceCents)}
+            </Text>
+          </View>
+
+          <View className="flex-row items-center justify-between">
+            <Text style={{ color: colors.textMuted }} className="text-sm">
+              Marcado
+            </Text>
+            <Text style={{ color: colors.success }} className="text-sm font-semibold">
+              {formatCurrencyBRL(priceSummary.purchasedPriceCents)}
+            </Text>
+          </View>
+
+          <View className="flex-row items-center justify-between">
+            <Text style={{ color: colors.textMuted }} className="text-sm">
+              Não marcado
+            </Text>
+            <Text style={{ color: colors.warning }} className="text-sm font-semibold">
+              {formatCurrencyBRL(priceSummary.unpurchasedPriceCents)}
+            </Text>
+          </View>
+        </View>
+      </UICard>
 
       <FlatList
         data={state.items}
@@ -113,7 +153,9 @@ export const ListDetailsView = () => {
 
                 <Pressable
                   onPress={() => actions.togglePurchased(item)}
-                  accessibilityLabel={item.isPurchased ? 'Desmarcar item' : 'Marcar item como comprado'}
+                  accessibilityLabel={
+                    item.isPurchased ? 'Desmarcar item' : 'Marcar item como comprado'
+                  }
                   className="h-7 w-7 items-center justify-center rounded-full border"
                   style={{
                     backgroundColor: item.isPurchased ? colors.successSoft : colors.surfaceElevated,
@@ -121,7 +163,9 @@ export const ListDetailsView = () => {
                   }}
                 >
                   <UILucideIcon
-                    iconNode={item.isPurchased ? lucideIconNodes.circleCheck : lucideIconNodes.circle}
+                    iconNode={
+                      item.isPurchased ? lucideIconNodes.circleCheck : lucideIconNodes.circle
+                    }
                     size={16}
                     color={item.isPurchased ? colors.success : colors.textMuted}
                   />

@@ -211,6 +211,24 @@ export const useListDetailsViewModel = () => {
     return state.items.reduce((acc, item) => acc + (item.priceCents ?? 0), 0);
   }, [state.items]);
 
+  const priceSummary = useMemo(() => {
+    const purchasedPriceCents = state.items.reduce((acc, item) => {
+      if (!item.isPurchased) {
+        return acc;
+      }
+
+      return acc + (item.priceCents ?? 0);
+    }, 0);
+
+    const unpurchasedPriceCents = totalPriceCents - purchasedPriceCents;
+
+    return {
+      totalPriceCents,
+      purchasedPriceCents,
+      unpurchasedPriceCents,
+    };
+  }, [state.items, totalPriceCents]);
+
   const actions = useMemo(
     () => ({
       loadData,
@@ -232,6 +250,7 @@ export const useListDetailsViewModel = () => {
     state,
     actions,
     totalPriceCents,
+    priceSummary,
     isEditing: Boolean(state.editingItemId),
   };
 };

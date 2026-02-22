@@ -1,6 +1,6 @@
 import { useAppColors } from '@infra/shared/theme/use-app-colors';
 import type { ReactNode } from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, type StyleProp, type ViewStyle } from 'react-native';
 
 export interface UICardProps {
   children?: ReactNode;
@@ -10,6 +10,7 @@ export interface UICardProps {
   titleClassName?: string;
   subtitleClassName?: string;
   contentClassName?: string;
+  style?: StyleProp<ViewStyle>;
 }
 
 export const UICard = ({
@@ -20,15 +21,19 @@ export const UICard = ({
   titleClassName,
   subtitleClassName,
   contentClassName,
+  style,
 }: UICardProps) => {
   const colors = useAppColors();
 
   return (
     <View
-      style={{
-        backgroundColor: colors.surface,
-        borderColor: colors.border,
-      }}
+      style={[
+        {
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+        },
+        style,
+      ]}
       className={`rounded-2xl border p-4 ${className ?? ''}`.trim()}
     >
       {title ? (
