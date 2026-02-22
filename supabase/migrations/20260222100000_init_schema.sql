@@ -77,10 +77,21 @@ begin
 end;
 $$;
 
-drop trigger if exists on_auth_user_created on auth.users;
-create trigger on_auth_user_created
-  after insert on auth.users
-  for each row execute function public.handle_new_user();
+create or replace function public.set_list_created_by_from_auth()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if auth.uid() is null then
+    raise exception 'Not authenticated';
+  end if;
+
+  new.created_by := auth.uid();
+  return new;
+end;
+$$;
 
 create or replace function public.handle_new_list_owner_member()
 returns trigger
@@ -96,6 +107,16 @@ begin
   return new;
 end;
 $$;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function public.handle_new_user();
+
+drop trigger if exists trg_lists_set_created_by on public.shopping_lists;
+create trigger trg_lists_set_created_by
+  before insert on public.shopping_lists
+  for each row execute function public.set_list_created_by_from_auth();
 
 drop trigger if exists trg_lists_set_updated_at on public.shopping_lists;
 create trigger trg_lists_set_updated_at
@@ -149,7 +170,7 @@ create policy "lists_insert_authenticated"
   on public.shopping_lists
   for insert
   to authenticated
-  with check (created_by = auth.uid());
+  with check (auth.uid() is not null);
 
 drop policy if exists "lists_update_member" on public.shopping_lists;
 create policy "lists_update_member"
@@ -191,6 +212,13 @@ create policy "members_select_member"
   on public.list_members
   for select
   using (user_id = auth.uid());
+
+drop policy if exists "members_insert_self" on public.list_members;
+create policy "members_insert_self"
+  on public.list_members
+  for insert
+  to authenticated
+  with check (user_id = auth.uid());
 
 drop policy if exists "items_select_member" on public.shopping_items;
 create policy "items_select_member"
@@ -272,7 +300,7 @@ security definer
 set search_path = public
 as $$
 declare
-  v_token text := encode(gen_random_bytes(24), 'hex');
+  v_token text := encode(extensions.gen_random_bytes(24), 'hex');
   v_expires_at timestamptz := now() + interval '30 days';
 begin
   if not exists (
@@ -287,7 +315,7 @@ begin
   insert into public.list_invites (list_id, token_hash, created_by, expires_at)
   values (
     p_list_id,
-    encode(digest(v_token, 'sha256'), 'hex'),
+    encode(extensions.digest(v_token, 'sha256'), 'hex'),
     auth.uid(),
     v_expires_at
   );
@@ -304,7 +332,7 @@ security definer
 set search_path = public
 as $$
 declare
-  v_token_hash text := encode(digest(p_token, 'sha256'), 'hex');
+  v_token_hash text := encode(extensions.digest(p_token, 'sha256'), 'hex');
   v_invite public.list_invites%rowtype;
 begin
   select *
@@ -346,9 +374,3 @@ grant select, insert, update, delete on table public.shopping_items to authentic
 grant select, insert, update, delete on table public.list_invites to authenticated;
 
 select pg_notify('pgrst', 'reload schema');
-
-
-
-
-
-
