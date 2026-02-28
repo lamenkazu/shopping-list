@@ -22,6 +22,7 @@ export const ListDetailsView = () => {
   const router = useRouter();
   const colors = useAppColors();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [itemMenuTargetId, setItemMenuTargetId] = useState<string | null>(null);
   const [isInviteCopied, setIsInviteCopied] = useState(false);
   const [itemPendingDelete, setItemPendingDelete] = useState<{ id: string; title: string } | null>(null);
   const copyFeedbackTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -63,7 +64,6 @@ export const ListDetailsView = () => {
     ],
     [actions.openInviteModal, router]
   );
-
   const onOpenDeleteItemDialog = (itemId: string, itemTitle: string) => {
     setItemPendingDelete({ id: itemId, title: itemTitle });
   };
@@ -207,68 +207,108 @@ export const ListDetailsView = () => {
           )
         }
         renderItem={({ item }) => (
-          <UICard>
-            <View className="gap-2">
-              <View className="flex-row items-center justify-between gap-3">
+          <UICard className="relative">
+            <Pressable
+              onPress={() => {
+                setItemMenuTargetId(null);
+                actions.togglePurchased(item);
+              }}
+              accessibilityLabel={
+                item.isPurchased
+                  ? 'Desmarcar item como comprado'
+                  : 'Marcar item como comprado'
+              }
+              className="w-full flex-row items-center gap-3"
+            >
+              <View
+                className="h-7 w-7 items-center justify-center rounded-full border"
+                style={{
+                  backgroundColor: item.isPurchased ? colors.successSoft : colors.surfaceElevated,
+                  borderColor: item.isPurchased ? colors.success : colors.border,
+                }}
+              >
+                <UILucideIcon
+                  iconNode={item.isPurchased ? lucideIconNodes.circleCheck : lucideIconNodes.circle}
+                  size={16}
+                  color={item.isPurchased ? colors.success : colors.textMuted}
+                />
+              </View>
+
+              <View className="flex-1 flex-row items-center gap-2">
                 <Text
+                  numberOfLines={1}
                   style={{ color: item.isPurchased ? colors.textMuted : colors.text }}
-                  className={`flex-1 text-lg font-semibold ${item.isPurchased ? 'line-through' : ''}`}
+                  className={
+                    item.isPurchased
+                      ? 'flex-1 text-base font-semibold line-through'
+                      : 'flex-1 text-base font-semibold'
+                  }
                 >
                   {item.title}
                 </Text>
 
+                <Text style={{ color: colors.textMuted }} className="text-sm">
+                  {item.quantity ?? '-'} {item.unit ?? ''}
+                </Text>
+
+                {item.priceCents !== null ? (
+                  <Text style={{ color: colors.success }} className="text-sm font-semibold">
+                    {formatCurrencyBRL(item.priceCents)}
+                  </Text>
+                ) : null}
+              </View>
+
+              <UIIconButton
+                iconNode={lucideIconNodes.ellipsisVertical}
+                size="sm"
+                accessibilityLabel={`Abrir ações de ${item.title}`}
+                onPress={event => {
+                  event.stopPropagation();
+                  setItemMenuTargetId(current => (current === item.id ? null : item.id));
+                }}
+              />
+            </Pressable>
+
+            {itemMenuTargetId === item.id ? (
+              <View
+                className="absolute right-2 top-11 z-20 rounded-2xl border p-2"
+                style={{
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                  minWidth: 170,
+                }}
+              >
                 <Pressable
-                  onPress={() => actions.togglePurchased(item)}
-                  accessibilityLabel={
-                    item.isPurchased ? 'Desmarcar item' : 'Marcar item como comprado'
-                  }
-                  className="h-7 w-7 items-center justify-center rounded-full border"
-                  style={{
-                    backgroundColor: item.isPurchased ? colors.successSoft : colors.surfaceElevated,
-                    borderColor: item.isPurchased ? colors.success : colors.border,
+                  onPress={event => {
+                    event.stopPropagation();
+                    setItemMenuTargetId(null);
+                    actions.startEdit(item);
                   }}
+                  className="my-1 flex-row items-center justify-between rounded-xl px-3 py-2"
+                  style={{ backgroundColor: colors.surfaceElevated }}
                 >
-                  <UILucideIcon
-                    iconNode={
-                      item.isPurchased ? lucideIconNodes.circleCheck : lucideIconNodes.circle
-                    }
-                    size={16}
-                    color={item.isPurchased ? colors.success : colors.textMuted}
-                  />
+                  <Text style={{ color: colors.text }} className="font-medium">
+                    Editar item
+                  </Text>
+                  <UILucideIcon iconNode={lucideIconNodes.pencil} size={16} color={colors.text} />
+                </Pressable>
+
+                <Pressable
+                  onPress={event => {
+                    event.stopPropagation();
+                    setItemMenuTargetId(null);
+                    onOpenDeleteItemDialog(item.id, item.title);
+                  }}
+                  className="my-1 flex-row items-center justify-between rounded-xl px-3 py-2"
+                  style={{ backgroundColor: colors.dangerSoft }}
+                >
+                  <Text style={{ color: colors.danger }} className="font-medium">
+                    Excluir item
+                  </Text>
+                  <UILucideIcon iconNode={lucideIconNodes.trash2} size={16} color={colors.danger} />
                 </Pressable>
               </View>
-
-              <View className="flex-row items-center justify-between gap-2">
-                <View className="gap-1">
-                  <Text style={{ color: colors.textMuted }} className="text-sm">
-                    {item.quantity ?? '-'} {item.unit ?? ''}
-                  </Text>
-
-                  {item.priceCents !== null ? (
-                    <Text style={{ color: colors.success }} className="text-sm font-semibold">
-                      {formatCurrencyBRL(item.priceCents)}
-                    </Text>
-                  ) : null}
-                </View>
-
-                <View className="flex-row items-center gap-2">
-                  <UIIconButton
-                    iconNode={lucideIconNodes.pencil}
-                    size="sm"
-                    onPress={() => actions.startEdit(item)}
-                    accessibilityLabel={`Editar ${item.title}`}
-                  />
-
-                  <UIIconButton
-                    iconNode={lucideIconNodes.trash2}
-                    size="sm"
-                    tone="danger"
-                    onPress={() => onOpenDeleteItemDialog(item.id, item.title)}
-                    accessibilityLabel={`Excluir ${item.title}`}
-                  />
-                </View>
-              </View>
-            </View>
+            ) : null}
           </UICard>
         )}
       />
@@ -480,8 +520,8 @@ export const ListDetailsView = () => {
         onCancel={onCloseDeleteItemDialog}
         onConfirm={onConfirmDeleteItem}
       />
-
       <UIMenu visible={isMenuOpen} onClose={() => setIsMenuOpen(false)} items={menuItems} />
     </UIScreen>
   );
 };
+
