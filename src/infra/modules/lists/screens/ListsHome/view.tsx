@@ -2,6 +2,7 @@ import { formatCurrencyBRL } from '@infra/shared/utils';
 import { useAppColors } from '@infra/shared/theme/use-app-colors';
 import { UIButton } from '@infra/shared/ui/button';
 import { UICard } from '@infra/shared/ui/card';
+import { UIConfirmDialog } from '@infra/shared/ui/confirm-dialog';
 import { UIHeader } from '@infra/shared/ui/header';
 import { UIIconButton } from '@infra/shared/ui/icon-button';
 import { lucideIconNodes } from '@infra/shared/ui/icon-nodes';
@@ -13,13 +14,14 @@ import { UIScreen } from '@infra/shared/ui/screen';
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Controller } from 'react-hook-form';
-import { Alert, FlatList, Pressable, Text, View } from 'react-native';
+import { FlatList, Pressable, Text, View } from 'react-native';
 import { useListsHomeViewModel } from './view-model';
 
 export const ListsHomeView = () => {
   const router = useRouter();
   const colors = useAppColors();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [listIdPendingDelete, setListIdPendingDelete] = useState<string | null>(null);
 
   const { form, state, actions } = useListsHomeViewModel();
 
@@ -42,17 +44,21 @@ export const ListsHomeView = () => {
     [router]
   );
 
-  const onDeleteList = (listId: string) => {
-    Alert.alert('Excluir lista', 'Esta ação não pode ser desfeita.', [
-      { text: 'Cancelar', style: 'cancel' },
-      {
-        text: 'Excluir',
-        style: 'destructive',
-        onPress: async () => {
-          await actions.deleteList(listId);
-        },
-      },
-    ]);
+  const onOpenDeleteListDialog = (listId: string) => {
+    setListIdPendingDelete(listId);
+  };
+
+  const onCloseDeleteListDialog = () => {
+    setListIdPendingDelete(null);
+  };
+
+  const onConfirmDeleteList = async () => {
+    if (!listIdPendingDelete) {
+      return;
+    }
+
+    await actions.deleteList(listIdPendingDelete);
+    setListIdPendingDelete(null);
   };
 
   return (
@@ -119,7 +125,7 @@ export const ListsHomeView = () => {
               <UIIconButton
                 iconNode={lucideIconNodes.trash2}
                 tone="danger"
-                onPress={() => onDeleteList(item.id)}
+                onPress={() => onOpenDeleteListDialog(item.id)}
                 accessibilityLabel={`Excluir ${item.name}`}
               />
             </View>
@@ -167,6 +173,15 @@ export const ListsHomeView = () => {
           />
         </View>
       </UIModal>
+
+      <UIConfirmDialog
+        visible={Boolean(listIdPendingDelete)}
+        title="Excluir lista"
+        message="Esta ação não pode ser desfeita."
+        confirmLabel="Excluir"
+        onCancel={onCloseDeleteListDialog}
+        onConfirm={onConfirmDeleteList}
+      />
 
       <UIMenu visible={isMenuOpen} onClose={() => setIsMenuOpen(false)} items={menuItems} />
     </UIScreen>

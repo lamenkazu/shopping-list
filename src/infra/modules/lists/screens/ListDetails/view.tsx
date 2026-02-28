@@ -5,6 +5,7 @@ import { UIHeader } from '@infra/shared/ui/header';
 import { UIIconButton } from '@infra/shared/ui/icon-button';
 import { lucideIconNodes } from '@infra/shared/ui/icon-nodes';
 import { UIInput } from '@infra/shared/ui/input';
+import { UIConfirmDialog } from '@infra/shared/ui/confirm-dialog';
 import { UILucideIcon } from '@infra/shared/ui/lucide-icon';
 import { UIMenu } from '@infra/shared/ui/menu';
 import { UIMessage } from '@infra/shared/ui/message';
@@ -14,7 +15,7 @@ import { formatCurrencyBRL } from '@infra/shared/utils';
 import { useRouter } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Controller } from 'react-hook-form';
-import { Alert, Animated, Easing, FlatList, Pressable, Text, View } from 'react-native';
+import { Animated, Easing, FlatList, Pressable, Text, View } from 'react-native';
 import { useListDetailsViewModel } from './view-model';
 
 export const ListDetailsView = () => {
@@ -22,6 +23,7 @@ export const ListDetailsView = () => {
   const colors = useAppColors();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isInviteCopied, setIsInviteCopied] = useState(false);
+  const [itemPendingDelete, setItemPendingDelete] = useState<{ id: string; title: string } | null>(null);
   const copyFeedbackTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const copyIconAnim = useRef(new Animated.Value(1)).current;
 
@@ -62,17 +64,21 @@ export const ListDetailsView = () => {
     [actions.openInviteModal, router]
   );
 
-  const onDeleteItem = (itemId: string, itemTitle: string) => {
-    Alert.alert('Excluir item', `Deseja remover "${itemTitle}" da lista?`, [
-      { text: 'Cancelar', style: 'cancel' },
-      {
-        text: 'Excluir',
-        style: 'destructive',
-        onPress: async () => {
-          await actions.deleteItem(itemId);
-        },
-      },
-    ]);
+  const onOpenDeleteItemDialog = (itemId: string, itemTitle: string) => {
+    setItemPendingDelete({ id: itemId, title: itemTitle });
+  };
+
+  const onCloseDeleteItemDialog = () => {
+    setItemPendingDelete(null);
+  };
+
+  const onConfirmDeleteItem = async () => {
+    if (!itemPendingDelete) {
+      return;
+    }
+
+    await actions.deleteItem(itemPendingDelete.id);
+    setItemPendingDelete(null);
   };
 
   useEffect(() => {
@@ -257,7 +263,7 @@ export const ListDetailsView = () => {
                     iconNode={lucideIconNodes.trash2}
                     size="sm"
                     tone="danger"
-                    onPress={() => onDeleteItem(item.id, item.title)}
+                    onPress={() => onOpenDeleteItemDialog(item.id, item.title)}
                     accessibilityLabel={`Excluir ${item.title}`}
                   />
                 </View>
@@ -465,6 +471,15 @@ export const ListDetailsView = () => {
           />
         </View>
       </UIModal>
+
+      <UIConfirmDialog
+        visible={Boolean(itemPendingDelete)}
+        title="Excluir item"
+        message={itemPendingDelete ? `Deseja remover "${itemPendingDelete.title}" da lista?` : ''}
+        confirmLabel="Excluir"
+        onCancel={onCloseDeleteItemDialog}
+        onConfirm={onConfirmDeleteItem}
+      />
 
       <UIMenu visible={isMenuOpen} onClose={() => setIsMenuOpen(false)} items={menuItems} />
     </UIScreen>

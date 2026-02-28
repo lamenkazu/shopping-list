@@ -69,6 +69,10 @@ Header visual da tela (custom) com suporte a voltar e ações à direita.
 ### `modal.tsx`
 Modal genérica com card de conteúdo.
 
+### `confirm-dialog.tsx`
+Diálogo de confirmação reutilizável (substitui `Alert.alert`) com ações de cancelar/confirmar.
+
+
 ### `menu.tsx`
 Menu de ações em overlay para opções rápidas (ex.: menu de 3 pontos).
 
