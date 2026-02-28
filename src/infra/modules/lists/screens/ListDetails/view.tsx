@@ -33,6 +33,8 @@ export const ListDetailsView = () => {
     formState: { errors },
   } = form;
 
+  const submitItemForm = handleSubmit(actions.submitItem);
+
   const formattedInviteExpiration = useMemo(() => {
     if (!invite.expiresAt) {
       return null;
@@ -380,6 +382,7 @@ export const ListDetailsView = () => {
                 placeholder="Nome do item"
                 errorMessage={errors.title?.message}
                 autoFocus
+                returnKeyType="next"
               />
             )}
           />
@@ -397,6 +400,7 @@ export const ListDetailsView = () => {
                   }}
                   placeholder="Qtd."
                   keyboardType="decimal-pad"
+                  returnKeyType="next"
                   errorMessage={errors.quantity?.message}
                   containerClassName="flex-1"
                 />
@@ -414,6 +418,7 @@ export const ListDetailsView = () => {
                     onChange(text);
                   }}
                   placeholder="Un."
+                  returnKeyType="next"
                   containerClassName="flex-1"
                 />
               )}
@@ -432,6 +437,8 @@ export const ListDetailsView = () => {
                 }}
                 placeholder="Preço (R$)"
                 keyboardType="decimal-pad"
+                returnKeyType="send"
+                onSubmitEditing={submitItemForm}
                 errorMessage={errors.price?.message}
               />
             )}
@@ -453,7 +460,7 @@ export const ListDetailsView = () => {
             loading={state.isBusy}
             loadingLabel="Salvando..."
             label={isEditing ? 'Salvar' : 'Adicionar'}
-            onPress={handleSubmit(actions.submitItem)}
+            onPress={submitItemForm}
             containerClassName="flex-1"
           />
         </View>

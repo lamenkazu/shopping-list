@@ -29,6 +29,8 @@ export const ListsHomeView = () => {
     formState: { errors },
   } = form;
 
+  const submitCreateList = handleSubmit(actions.submit);
+
   const menuItems = useMemo(
     () => [
       {
@@ -58,7 +60,7 @@ export const ListsHomeView = () => {
       <UIHeader
         title="Listas de compras"
         subtitle="Compartilhe e acompanhe em tempo real"
-        rightSlot={(
+        rightSlot={
           <View className="flex-row items-center gap-2">
             <UIIconButton
               iconNode={lucideIconNodes.plus}
@@ -72,7 +74,7 @@ export const ListsHomeView = () => {
               accessibilityLabel="Abrir opções"
             />
           </View>
-        )}
+        }
       />
 
       <UIMessage tone="error" message={state.error} className="mb-3" />
@@ -139,6 +141,8 @@ export const ListsHomeView = () => {
               placeholder="Exemplo: Compras da família"
               errorMessage={errors.name?.message}
               autoFocus
+              returnKeyType="send"
+              onSubmitEditing={submitCreateList}
             />
           )}
         />
@@ -158,7 +162,7 @@ export const ListsHomeView = () => {
             loading={state.isCreating}
             loadingLabel="Criando..."
             label="Criar"
-            onPress={handleSubmit(actions.submit)}
+            onPress={submitCreateList}
             containerClassName="flex-1"
           />
         </View>

@@ -24,6 +24,8 @@ export const SignUpView = () => {
     formState: { errors, isSubmitting },
   } = form;
 
+  const submitForm = handleSubmit(actions.submit);
+
   return (
     <UISection title="Criar conta">
       <View className="gap-3">
@@ -34,6 +36,7 @@ export const SignUpView = () => {
             <UIInput
               placeholder="Nome completo"
               value={value}
+              returnKeyType="next"
               onChangeText={text => {
                 actions.resetError();
                 onChange(text);
@@ -52,6 +55,7 @@ export const SignUpView = () => {
               keyboardType="email-address"
               placeholder="seu@email.com"
               value={value}
+              returnKeyType="next"
               onChangeText={text => {
                 actions.resetError();
                 onChange(text);
@@ -69,6 +73,7 @@ export const SignUpView = () => {
               secureTextEntry={!isPasswordVisible}
               placeholder="Senha"
               value={value}
+              returnKeyType="next"
               onChangeText={text => {
                 actions.resetError();
                 onChange(text);
@@ -97,6 +102,8 @@ export const SignUpView = () => {
               secureTextEntry={!isConfirmPasswordVisible}
               placeholder="Confirmar senha"
               value={value}
+              returnKeyType="send"
+              onSubmitEditing={submitForm}
               onChangeText={text => {
                 actions.resetError();
                 onChange(text);
@@ -127,7 +134,7 @@ export const SignUpView = () => {
         loading={isSubmitting}
         loadingLabel="Criando conta..."
         label="Criar conta"
-        onPress={handleSubmit(actions.submit)}
+        onPress={submitForm}
         containerClassName="mt-6"
       />
 

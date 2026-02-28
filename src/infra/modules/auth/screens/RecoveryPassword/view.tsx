@@ -22,6 +22,8 @@ export const RecoveryPasswordView = () => {
     formState: { errors, isSubmitting },
   } = form;
 
+  const submitForm = handleSubmit(actions.submit);
+
   return (
     <UISection
       title="Redefinir senha"
@@ -44,6 +46,7 @@ export const RecoveryPasswordView = () => {
               secureTextEntry={!isPasswordVisible}
               placeholder="Nova senha"
               value={value}
+              returnKeyType="next"
               onChangeText={text => {
                 actions.resetMessages();
                 onChange(text);
@@ -72,6 +75,8 @@ export const RecoveryPasswordView = () => {
               secureTextEntry={!isConfirmPasswordVisible}
               placeholder="Confirmar nova senha"
               value={value}
+              returnKeyType="send"
+              onSubmitEditing={submitForm}
               onChangeText={text => {
                 actions.resetMessages();
                 onChange(text);
@@ -103,7 +108,7 @@ export const RecoveryPasswordView = () => {
         loading={isSubmitting}
         loadingLabel="Salvando..."
         label="Salvar nova senha"
-        onPress={handleSubmit(actions.submit)}
+        onPress={submitForm}
         containerClassName="mt-6"
       />
 

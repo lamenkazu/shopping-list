@@ -16,6 +16,8 @@ export const ForgotPasswordView = () => {
     formState: { errors, isSubmitting },
   } = form;
 
+  const submitForm = handleSubmit(actions.submit);
+
   return (
     <UISection title="Esqueci minha senha" subtitle="Enviaremos um link de redefinição por e-mail.">
       <View className="gap-3">
@@ -28,6 +30,8 @@ export const ForgotPasswordView = () => {
               keyboardType="email-address"
               placeholder="seu@email.com"
               value={value}
+              returnKeyType="send"
+              onSubmitEditing={submitForm}
               onChangeText={text => {
                 actions.resetMessages();
                 onChange(text);
@@ -46,7 +50,7 @@ export const ForgotPasswordView = () => {
         loading={isSubmitting}
         loadingLabel="Enviando..."
         label="Enviar e-mail de redefinição"
-        onPress={handleSubmit(actions.submit)}
+        onPress={submitForm}
         containerClassName="mt-6"
       />
 
@@ -58,4 +62,3 @@ export const ForgotPasswordView = () => {
     </UISection>
   );
 };
-

@@ -24,6 +24,8 @@ export const SignInView = () => {
     formState: { errors, isSubmitting },
   } = form;
 
+  const submitForm = handleSubmit(actions.submit);
+
   return (
     <UISection title="Entrar" subtitle="Lista de compras compartilhada em tempo real.">
       <View className="gap-3">
@@ -36,6 +38,7 @@ export const SignInView = () => {
               keyboardType="email-address"
               placeholder="seu@email.com"
               value={value}
+              returnKeyType="next"
               onChangeText={text => {
                 actions.resetError();
                 onChange(text);
@@ -53,6 +56,8 @@ export const SignInView = () => {
               secureTextEntry={!isPasswordVisible}
               placeholder="Senha"
               value={value}
+              returnKeyType="send"
+              onSubmitEditing={submitForm}
               onChangeText={text => {
                 actions.resetError();
                 onChange(text);
@@ -81,7 +86,7 @@ export const SignInView = () => {
         loading={isSubmitting}
         loadingLabel="Entrando..."
         label="Entrar"
-        onPress={handleSubmit(actions.submit)}
+        onPress={submitForm}
         containerClassName="mt-6"
       />
 
