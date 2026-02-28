@@ -26,6 +26,7 @@ export class InvitesSupabaseRepository implements InvitesRepository {
     try {
       const { data: response, error } = await supabase.rpc('create_invite', {
         p_list_id: data.listId,
+        p_force_new: data.forceNew ?? false,
       });
 
       if (error) {

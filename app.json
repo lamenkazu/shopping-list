@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "realtime-shopping",
-    "slug": "realtime-shopping",
+    "name": "Realtime Conjoint",
+    "slug": "realtime-conjoint",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/infra/shared/assets/images/icon.png",
@@ -20,7 +20,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.realtimeshopping"
+      "package": "com.eppck.realtimeshopping"
     },
     "web": {
       "output": "static",

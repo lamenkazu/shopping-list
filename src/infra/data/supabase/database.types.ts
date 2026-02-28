@@ -187,6 +187,8 @@ export type Database = {
           created_at: string;
           created_by: string;
           id: string;
+          invite_expires_at: string | null;
+          invite_token: string | null;
           name: string;
           updated_at: string;
         };
@@ -194,6 +196,8 @@ export type Database = {
           created_at?: string;
           created_by?: string;
           id?: string;
+          invite_expires_at?: string | null;
+          invite_token?: string | null;
           name: string;
           updated_at?: string;
         };
@@ -201,6 +205,8 @@ export type Database = {
           created_at?: string;
           created_by?: string;
           id?: string;
+          invite_expires_at?: string | null;
+          invite_token?: string | null;
           name?: string;
           updated_at?: string;
         };
@@ -221,6 +227,8 @@ export type Database = {
           created_at: string;
           created_by: string;
           id: string;
+          invite_expires_at: string | null;
+          invite_token: string | null;
           name: string;
           total_price_cents: number;
           updated_at: string;
@@ -242,7 +250,7 @@ export type Database = {
         Returns: string;
       };
       create_invite: {
-        Args: { p_list_id: string };
+        Args: { p_force_new?: boolean; p_list_id: string };
         Returns: {
           expires_at: string;
           token: string;
@@ -257,4 +265,3 @@ export type Database = {
     };
   };
 };
-

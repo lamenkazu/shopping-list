@@ -18,6 +18,8 @@ const mapShoppingList = (row: ShoppingListWithTotalsRow): ShoppingListDTO => {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     createdBy: row.created_by,
+    inviteToken: row.invite_token,
+    inviteExpiresAt: row.invite_expires_at,
     totalPriceCents: Number(row.total_price_cents ?? 0),
   };
 };

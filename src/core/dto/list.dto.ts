@@ -4,6 +4,8 @@ export type ShoppingListDTO = {
   createdAt: string;
   updatedAt: string;
   createdBy: string;
+  inviteToken: string | null;
+  inviteExpiresAt: string | null;
   totalPriceCents: number;
 };
 

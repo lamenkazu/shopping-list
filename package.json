@@ -12,8 +12,8 @@
     "format": "biome format --write .",
     "apk:debug": "cd android && gradlew assembleDebug && cd ..",
     "apk:release": "cd android && gradlew assembleRelease && cd ..",
-    "supabase:db:push": "npx supabase db push",
-    "supabase:migration:list": "npx supabase migration list"
+    "supabase:db:push": "pnpm dlx supabase db push",
+    "supabase:migration:list": "pnpm dlx supabase migration list"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",

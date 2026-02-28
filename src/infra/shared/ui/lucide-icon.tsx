@@ -1,5 +1,6 @@
-import { Image } from 'expo-image';
-import type { ImageStyle, StyleProp } from 'react-native';
+import { Feather } from '@expo/vector-icons';
+import { lucideIconNodes } from '@infra/shared/ui/icon-nodes';
+import type { StyleProp, TextStyle } from 'react-native';
 
 export type LucideIconNode = ReadonlyArray<readonly [string, Record<string, unknown>]>;
 
@@ -8,61 +9,44 @@ export interface UILucideIconProps {
   size?: number;
   color?: string;
   strokeWidth?: number;
-  style?: StyleProp<ImageStyle>;
+  style?: StyleProp<TextStyle>;
 }
 
-const escapeAttribute = (value: unknown) => {
-  return String(value)
-    .replaceAll('&', '&amp;')
-    .replaceAll('"', '&quot;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;');
-};
+const resolveFeatherName = (iconNode: LucideIconNode) => {
+  if (iconNode === lucideIconNodes.plus) return 'plus';
+  if (iconNode === lucideIconNodes.ellipsisVertical) return 'more-vertical';
+  if (iconNode === lucideIconNodes.trash2) return 'trash-2';
+  if (iconNode === lucideIconNodes.pencil) return 'edit-2';
+  if (iconNode === lucideIconNodes.circle) return 'circle';
+  if (iconNode === lucideIconNodes.circleCheck) return 'check-circle';
+  if (iconNode === lucideIconNodes.chevronLeft) return 'chevron-left';
+  if (iconNode === lucideIconNodes.user) return 'user';
+  if (iconNode === lucideIconNodes.link) return 'link';
+  if (iconNode === lucideIconNodes.eye) return 'eye';
+  if (iconNode === lucideIconNodes.eyeOff) return 'eye-off';
+  if (iconNode === lucideIconNodes.x) return 'x';
+  if (iconNode === lucideIconNodes.copy) return 'copy';
 
-const buildSvg = (iconNode: LucideIconNode, color: string, strokeWidth: number) => {
-  const nodes = iconNode
-    .map(([tagName, attrs]) => {
-      const attributes = Object.entries(attrs)
-        .filter(([key]) => key !== 'key')
-        .map(([key, value]) => `${key}="${escapeAttribute(value)}"`)
-        .join(' ');
-
-      return `<${tagName} ${attributes} />`;
-    })
-    .join('');
-
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${escapeAttribute(
-    color
-  )}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round">${nodes}</svg>`;
-};
-
-const utf8ToBase64 = (value: string) => {
-  if (typeof globalThis.btoa === 'function') {
-    return globalThis.btoa(unescape(encodeURIComponent(value)));
-  }
-
-  const maybeBuffer = (globalThis as { Buffer?: { from: (input: string, encoding?: string) => { toString: (encoding: string) => string } } }).Buffer;
-
-  if (maybeBuffer) {
-    return maybeBuffer.from(value, 'utf-8').toString('base64');
-  }
-
-  return '';
+  return 'circle';
 };
 
 export const UILucideIcon = ({
   iconNode,
   size = 20,
   color = '#111827',
-  strokeWidth = 2,
+  strokeWidth,
   style,
 }: UILucideIconProps) => {
-  const svg = buildSvg(iconNode, color, strokeWidth);
-  const base64 = utf8ToBase64(svg);
+  const featherName = resolveFeatherName(iconNode);
 
-  const source = base64
-    ? { uri: `data:image/svg+xml;base64,${base64}` }
-    : { uri: `data:image/svg+xml;utf8,${encodeURIComponent(svg)}` };
-
-  return <Image source={source} style={[{ width: size, height: size }, style]} contentFit="contain" />;
+  return (
+    <Feather
+      name={featherName}
+      size={size}
+      color={color}
+      style={style}
+      // Mantido para compatibilidade da assinatura do componente
+      strokeWidth={strokeWidth}
+    />
+  );
 };

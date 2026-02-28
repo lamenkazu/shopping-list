@@ -11,7 +11,9 @@ create table if not exists public.shopping_lists (
   name text not null,
   created_by uuid not null default auth.uid() references auth.users(id),
   created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+  updated_at timestamptz not null default now(),
+  invite_token text,
+  invite_expires_at timestamptz
 );
 
 create table if not exists public.list_members (
@@ -52,6 +54,9 @@ create table if not exists public.list_invites (
 create index if not exists idx_items_list_created_at on public.shopping_items(list_id, created_at desc);
 create index if not exists idx_members_user_id on public.list_members(user_id);
 create index if not exists idx_list_invites_token_hash on public.list_invites(token_hash);
+create unique index if not exists idx_shopping_lists_invite_token
+  on public.shopping_lists(invite_token)
+  where invite_token is not null;
 
 create view public.shopping_lists_with_totals
 with (security_invoker = true)
@@ -62,10 +67,12 @@ select
   l.created_by,
   l.created_at,
   l.updated_at,
+  l.invite_token,
+  l.invite_expires_at,
   coalesce(sum(i.price_cents), 0)::bigint as total_price_cents
 from public.shopping_lists l
 left join public.shopping_items i on i.list_id = l.id
-group by l.id, l.name, l.created_by, l.created_at, l.updated_at;
+group by l.id, l.name, l.created_by, l.created_at, l.updated_at, l.invite_token, l.invite_expires_at;
 
 create or replace function public.set_updated_at()
 returns trigger
@@ -308,15 +315,20 @@ create policy "invites_select_member"
     )
   );
 
-create or replace function public.create_invite(p_list_id uuid)
+create or replace function public.create_invite(
+  p_list_id uuid,
+  p_force_new boolean default false
+)
 returns table(token text, expires_at timestamptz)
 language plpgsql
 security definer
 set search_path = public
 as $$
 declare
-  v_token text := encode(extensions.gen_random_bytes(24), 'hex');
-  v_expires_at timestamptz := now() + interval '30 days';
+  v_existing_token text;
+  v_existing_expires_at timestamptz;
+  v_token text;
+  v_expires_at timestamptz := now() + interval '24 hours';
 begin
   if not exists (
     select 1
@@ -327,6 +339,29 @@ begin
     raise exception 'You are not a member of this list.';
   end if;
 
+  select invite_token, invite_expires_at
+  into v_existing_token, v_existing_expires_at
+  from public.shopping_lists
+  where id = p_list_id;
+
+  if not p_force_new
+     and v_existing_token is not null
+     and v_existing_expires_at is not null
+     and v_existing_expires_at > now() then
+    return query
+    select v_existing_token, v_existing_expires_at;
+    return;
+  end if;
+
+  if v_existing_token is not null then
+    update public.list_invites
+    set revoked_at = now()
+    where token_hash = encode(extensions.digest(v_existing_token, 'sha256'), 'hex')
+      and revoked_at is null;
+  end if;
+
+  v_token := encode(extensions.gen_random_bytes(24), 'hex');
+
   insert into public.list_invites (list_id, token_hash, created_by, expires_at)
   values (
     p_list_id,
@@ -334,6 +369,11 @@ begin
     auth.uid(),
     v_expires_at
   );
+
+  update public.shopping_lists
+  set invite_token = v_token,
+      invite_expires_at = v_expires_at
+  where id = p_list_id;
 
   return query
   select v_token, v_expires_at;
@@ -375,10 +415,10 @@ begin
 end;
 $$;
 
-revoke all on function public.create_invite(uuid) from public;
+revoke all on function public.create_invite(uuid, boolean) from public;
 revoke all on function public.accept_invite(text) from public;
 
-grant execute on function public.create_invite(uuid) to authenticated;
+grant execute on function public.create_invite(uuid, boolean) to authenticated;
 grant execute on function public.accept_invite(text) to authenticated;
 
 grant usage on schema public to anon, authenticated;
@@ -390,6 +430,12 @@ grant select, insert, update, delete on table public.list_invites to authenticat
 grant select on public.shopping_lists_with_totals to authenticated;
 
 select pg_notify('pgrst', 'reload schema');
+
+
+
+
+
+
 
 
 

@@ -1,5 +1,6 @@
 export type CreateInviteDTO = {
   listId: string;
+  forceNew?: boolean;
 };
 
 export type CreatedInviteDTO = {
